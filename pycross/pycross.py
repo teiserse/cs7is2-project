@@ -2,7 +2,8 @@ import json
 
 
 class Picross:
-    """A class representing a picross puzzle (a.k.a a nonogram).
+    """
+    A class representing a picross puzzle (a.k.a a nonogram).
 
     Access the puzzle grid by puzzle[row][column].
     -1 means a slot is unknown.
@@ -11,11 +12,20 @@ class Picross:
     """
 
     def __init__(self, width, height):
+        self.width = width  # width of the puzzle
+        self.height = height  # height of the puzzle
+        self.colours = {}  # colours used in the puzzle, indexed by the represented integer
+        """
+        Rows and columns are represented as a list of rows/columns. For rows, they are ordered
+        going from up to down, and for columns they are ordered from left to right. 
+        
+        The rows/columns are defined as a list of tuples (colour, length). They represent the colours
+        going from left to right on a row, and from up to down in a column.
+        """
         self.rows = []
         self.columns = []
-        self.width = width
-        self.height = height
-        self.puzzle = []
+
+        self.puzzle = []  # The store of the current state of the puzzle
         for row in range(height):
             self.puzzle.append([])
             for column in range(width):
@@ -52,3 +62,16 @@ class Picross:
         call goes through __getitem__.
         """
         self.puzzle[key] = value
+
+
+def from_json(json_string):
+    def as_picross(dct):
+        print(dct)
+        if "picross" in dct:
+            picross = Picross(dct["width"], dct["height"])
+            picross.colours = dct["colours"]
+            picross.rows = dct["rows"]
+            picross.columns = dct["columns"]
+            return picross
+        return dct
+    return json.loads(json_string, object_hook=as_picross)
