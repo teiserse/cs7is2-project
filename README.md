@@ -30,5 +30,5 @@ Andrej Liadov
 
 
 **Image Sources**
-[1] - https://coolbutuseless.github.io/2018/09/26/nonograms-in-r-nonogram-package/ - Accessed 6/March/2021
+[1] - https://coolbutuseless.github.io/2018/09/26/nonograms-in-r-nonogram-package/ - Accessed 6/March/2021  
 [2] - http://www.cross-plus-a.com/data/color.gif - Accessed 6/March/2021
