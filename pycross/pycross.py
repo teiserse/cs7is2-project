@@ -19,8 +19,8 @@ class Picross:
         Rows and columns are represented as a list of rows/columns. For rows, they are ordered
         going from up to down, and for columns they are ordered from left to right. 
         
-        The rows/columns are defined as a list of tuples (colour, length). They represent the colours
-        going from left to right on a row, and from up to down in a column.
+        The rows/columns are defined as a list of tuples (colour, length).
+        They represent the colours going from left to right on a row, and from up to down in a column.
         """
         self.rows = []
         self.columns = []
@@ -63,10 +63,50 @@ class Picross:
         """
         self.puzzle[key] = value
 
+    def row_complete(self, index):
+        """
+        Function to check if a row is complete.
+        """
+        return self._check_complete(False, index)
+
+    def column_complete(self, index):
+        """
+        Function to check if a column is complete.
+        """
+        return self._check_complete(True, index)
+
+    def _check_complete(self, column, index):
+        """
+        Function to check is a particular row or column is complete.
+        """
+        line = []
+        if column:
+            line = [row[index] for row in self.puzzle]
+        else:
+            line = self.puzzle[index]
+
+        rule = []
+        if column:
+            rule = self.columns[index]
+        else:
+            rule = self.rows[index]
+
+        ser_line = _serialise_line(line)
+        ser_line = [x for x in ser_line if x[0] != -1 and x[0] != 0]
+
+        for i in range(len(ser_line)):
+            if ser_line[i][0] != rule[i][0] and ser_line[i][1] != rule[i][1]:
+                return False
+
+        return len(ser_line) == len(rule)
+
 
 def from_json(json_string):
+    """
+    Helper function to create a Picross puzzle from a JSON file.
+    See "example.json" for an example.
+    """
     def as_picross(dct):
-        print(dct)
         if "picross" in dct:
             picross = Picross(dct["width"], dct["height"])
             picross.colours = dct["colours"]
@@ -74,4 +114,27 @@ def from_json(json_string):
             picross.columns = dct["columns"]
             return picross
         return dct
+
     return json.loads(json_string, object_hook=as_picross)
+
+
+def _serialise_line(line):
+    """
+    Helper function that reads a list, and returns a list of tuples of
+    the array element, with the number of consecutive occurrences of
+    the element, in the order of the original list
+    """
+
+    result = []
+    for elem in line:
+        if not result:
+            result.append((elem, 1))
+        else:
+            (prev_elem, count) = result.pop()
+            if elem == prev_elem:
+                result.append((prev_elem, count + 1))
+            else:
+                result.append((prev_elem, count))
+                result.append((elem, 1))
+
+    return result
