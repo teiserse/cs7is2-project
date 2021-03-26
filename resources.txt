@@ -1,0 +1,5 @@
+Solving Japanese Puzzles with Heuristics - https://ieeexplore.ieee.org/abstract/document/4219047
+Colored Nonograms:An Integer Linear Programming Approach - https://link.springer.com/chapter/10.1007/978-3-642-04686-5_18
+An evolutionary algorithm for discrete tomography - https://www.sciencedirect.com/science/article/pii/S0166218X05001216
+An efficient algorithm for solving nonograms - https://link.springer.com/article/10.1007/s10489-009-0200-0
+A fast nonogram solver that won the TAAI 2017 and ICGA 2018 tournaments  - https://content.iospress.com/articles/icga-journal/icg190097
