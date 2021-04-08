@@ -14,7 +14,7 @@ Multi-coloured picross images also exist. An example is displayed below.
 
 ## Contributors
 
-Edvinas Teiserkis
+Edvinas Teiserskis
 
 
 Min Wu
