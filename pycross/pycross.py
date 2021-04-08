@@ -63,13 +63,24 @@ class Picross:
         """
         self.puzzle[key] = value
 
-    def row_complete(self, index):
+    def is_complete(self):
+        for row in range(self.height):
+            if not self.is_row_complete(row):
+                return False
+
+        for column in range(self.width):
+            if not self.is_column_complete(column):
+                return False
+
+        return True
+
+    def is_row_complete(self, index):
         """
         Function to check if a row is complete.
         """
         return self._check_complete(False, index)
 
-    def column_complete(self, index):
+    def is_column_complete(self, index):
         """
         Function to check if a column is complete.
         """
