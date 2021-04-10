@@ -49,7 +49,6 @@ def perform_search(puzzle: pycross.Picross):
         # check if it is solved
         if puzzle.is_complete():
             found = True
-            print(puzzle)
             break
         # if not solved, reset the board
         for item in inputs:
