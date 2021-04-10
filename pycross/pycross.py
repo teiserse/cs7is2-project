@@ -108,7 +108,7 @@ class Picross:
         for i in range(len(ser_line)):
             if i >= len(rule):
                 return False
-            if ser_line[i] != rule[i]:
+            if ser_line[i][0] != rule[i][0] or ser_line[i][1] != rule[i][1]:
                 return False
 
         return len(ser_line) == len(rule)
