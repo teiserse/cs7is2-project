@@ -106,7 +106,9 @@ class Picross:
         ser_line = [x for x in ser_line if x[0] != -1 and x[0] != 0]
 
         for i in range(len(ser_line)):
-            if ser_line[i][0] != rule[i][0] and ser_line[i][1] != rule[i][1]:
+            if i >= len(rule):
+                return False
+            if ser_line[i] != rule[i]:
                 return False
 
         return len(ser_line) == len(rule)
@@ -120,7 +122,8 @@ def from_json(json_string):
     def as_picross(dct):
         if "picross" in dct:
             picross = Picross(dct["width"], dct["height"])
-            picross.colours = dct["colours"]
+            colours = {int(number): description for number, description in dct["colours"].items()}
+            picross.colours = colours
             picross.rows = dct["rows"]
             picross.columns = dct["columns"]
             return picross
