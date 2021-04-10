@@ -115,7 +115,7 @@ class Picross:
 def from_json(json_string):
     """
     Helper function to create a Picross puzzle from a JSON file.
-    See "example.json" for an example.
+    See the "examples" folder for examples.
     """
     def as_picross(dct):
         if "picross" in dct:
