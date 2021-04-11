@@ -1,5 +1,5 @@
 import json
-
+import os
 
 class Picross:
     """
@@ -100,6 +100,102 @@ class Picross:
 
         return len(ser_line) == len(rule)
 
+    def get_possible_actions(self, index, row=True):
+        constraints = self.columns[index]
+        size = self.height
+        if row:
+            constraints = self.rows[index]
+            size = self.width
+        
+        min = make_min(constraints, size)
+        min_length = get_constraint_length(constraints)
+        results = get_permutations(min, min_length, size)
+        return results
+
+    def get_possible_lines(self):
+        possible_rows = []
+        for i in range(self.height):
+            if not self.row_complete(i):
+                possible_rows.append(i)
+        
+        possible_cols = []
+        for i in range(self.width):
+            if not self.column_complete(i):
+                possible_cols.append(i)
+            
+        possible_lines = [possible_rows, possible_cols]
+        return possible_lines
+
+class q_learning_agent():
+    def __init__(self, picross):
+        self.picross = picross
+        self.q_table = {}
+
+    def test(self, index, row=True):
+        result = self.picross.get_possible_actions(index, row)
+        return result
+
+def make_min(constraints, size):
+        line = []
+        min_length = get_constraint_length(constraints)
+        for i in range(len(constraints)):
+            fulls = constraints[i][1]
+            for j in range(fulls):
+                line.append(constraints[i][0])
+            if i+1 < len(constraints):
+                if constraints[i+1][0] == constraints[i][0]:
+                    line.append(0)
+
+        if min_length < size:
+            for i in range(size - min_length):
+                line.append(0)
+        return line
+
+def rotate_list(l, num):
+    for i in range(num):
+        temp = l.pop()
+        l.insert(0, temp)
+    return l
+
+def get_index(min, min_length):
+    temp = min
+    index = []
+    for i in range(min_length-1):
+        if i+1 < len(min) and min[i] != min[i+1]:
+            index.append(i+1)
+    return index
+
+def get_permutations(min, min_length, size):
+    result = []
+    result.append(min.copy())
+    if min_length >= size:
+        return result
+
+    temp = min.copy()
+    for i in range(size - min_length):
+        temp = rotate_list(temp, 1)
+        result.append(temp.copy())
+
+    index = get_index(min, min_length)
+    temp = min.copy()
+    for i in index:
+        temp.insert(i, 0)
+        temp.pop()
+        result = result + get_permutations(temp.copy(), min_length+1, size)
+        temp = min.copy()
+
+    return result
+
+def get_constraint_length(constraint):
+    sum = 0
+    num_spaces = 0
+    for i in range(len(constraint)):
+        sum += constraint[i][1]
+        if i+1 < len(constraint):
+            if constraint[i+1][0] == constraint[i][0]:
+                num_spaces += 1
+    
+    return sum + num_spaces
 
 def from_json(json_string):
     """
@@ -138,3 +234,12 @@ def _serialise_line(line):
                 result.append((elem, 1))
 
     return result
+
+#Read Example
+file_ptr = open("pycross/example.json", 'r')
+JSON_string = file_ptr.read()
+picross = from_json(JSON_string)
+
+agent = q_learning_agent(picross)
+result = agent.test(1, True)
+print('h')
