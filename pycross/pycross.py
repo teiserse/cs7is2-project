@@ -21,6 +21,13 @@ class Picross:
         
         The rows/columns are defined as a list of tuples (colour, length).
         They represent the colours going from left to right on a row, and from up to down in a column.
+        
+        guide (works both for rows and columns):
+        self.rows = the list of rows
+        self.rows[row] = the list of rules in the row
+        self.rows[row][rule] = a rule in the row, can be a 2-ple or 2 element list
+        self.rows[row][rule][0] = the rule's colour
+        self.rows[row][rule][1] = the rule's length
         """
         self.rows = []
         self.columns = []
@@ -73,6 +80,30 @@ class Picross:
                 return False
 
         return True
+
+    def row_has_colour(self, row_index, colour):
+        """
+        Checks if a row has a particular colour -
+        i.e. can you use that colour in this row.
+        """
+        line = self.rows[row_index]
+        for rule in line:
+            if rule[0] == colour:
+                return True
+
+        return False
+
+    def column_has_colour(self, column_index, colour):
+        """
+        Checks if a column has a particular colour -
+        i.e. can you use that colour in this column.
+        """
+        line = self.columns[column_index]
+        for rule in line:
+            if rule[0] == colour:
+                return True
+
+        return False
 
     def is_row_complete(self, index):
         """
