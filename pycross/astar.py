@@ -119,6 +119,31 @@ def cost_additive_function(puzzle: pycross.Picross, move):
     return row_cost + column_cost
 
 
+def cost_mul_function(puzzle: pycross.Picross, move):
+    """
+    A cost function which multiples together a score from the row and the column
+    of the input move, based on the proportion of the row/column that is
+    the the colour of the move.
+
+    the row/column contributes a score of 0 to 1 - the number of squares of that
+    colour in the row/column divided by the length of the row/column -
+    higher score means higher probability.
+    Then, we take the score away from 1, as a better option means a lower cost.
+
+    A full row and column intersecting should give a 0 cost move, while a more sparse
+    move will give a higher one, at a limit approaching 1 (1 would mean both the row
+    and column give 0, meaning it is an invalid move and should not be considered to begin with)
+
+    Cost function range: [0, 1)
+    """
+    row, column, colour = move
+
+    row_cost = 1 - puzzle.row_colour_proportion(row, colour)
+    column_cost = 1 - puzzle.column_colour_proportion(column, colour)
+
+    return row_cost * column_cost
+
+
 if __name__ == '__main__':
     # x = pycross.Picross(5, 2)
     # x.colours = {1: "black"}
@@ -128,7 +153,7 @@ if __name__ == '__main__':
 
     import time
     pre = time.perf_counter()
-    y = perform_search(x, cost_additive_function)
+    y = perform_search(x, cost_mul_function)
     post = time.perf_counter()
     print(post - pre)
     print(y)
