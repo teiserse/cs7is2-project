@@ -112,6 +112,34 @@ class Picross:
 
         return False
 
+    @cache
+    def row_colour_proportion(self, row_index, colour):
+        """
+        Calculates how many tiles in a row are of the colour,
+        and divides the amount by the length of the row.
+        """
+        line = self.rows[row_index]
+        colour_tiles = 0
+        for rule in line:
+            if rule[0] == colour:
+                colour_tiles += rule[1]
+
+        return colour_tiles / self.width
+
+    @cache
+    def column_colour_proportion(self, column_index, colour):
+        """
+        Calculates how many tiles in a column are of the colour,
+        and divides the amount by the length of the column.
+        """
+        line = self.columns[column_index]
+        colour_tiles = 0
+        for rule in line:
+            if rule[0] == colour:
+                colour_tiles += rule[1]
+
+        return colour_tiles / self.height
+
     def is_row_complete(self, index):
         """
         Function to check if a row is complete.
