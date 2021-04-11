@@ -15,7 +15,12 @@ import pycross
 # or even potentially wrongly filled ones (the last one will be quite hard, but possible?).
 
 
-def perform_search(puzzle: pycross.Picross):
+def perform_search(puzzle: pycross.Picross, cost_function=None, heuristic_function=None):
+    """
+    Perform a solution search over the puzzle.
+    If no cost function is provided, all moves have same cost of 1.
+    If no heuristic is provided, heuristic is always 0 (no heuristic used).
+    """
     # Setup
     frontier = PriorityQueue()
     already_input = set()
@@ -29,16 +34,25 @@ def perform_search(puzzle: pycross.Picross):
     for row in range(puzzle.height):
         for column in range(puzzle.width):
             for colour in puzzle.colours.keys():
+                # filter out invalid moves
+                if not puzzle.row_has_colour(row, colour) or not puzzle.column_has_colour(column, colour):
+                    continue
+                # and if the move is valid:
                 filled_tiles = set()
                 filled_tiles.add((row, column, colour))
-                frontier.put((1, filled_tiles))
+                cost = 1
+                if cost_function is not None:
+                    cost = cost_function(puzzle, (row, column, colour))
+                frontier.put((cost, filled_tiles))
                 already_input.add(frozenset(filled_tiles))
 
     # Begin search
     found = False
-    while not found:
+    while not frontier.empty():
         # get the set of used tiles
-        _weight, inputs = frontier.get()
+        weight, inputs = frontier.get()
+        prev_cost = weight
+
         # set up the game board
         # also, get the set of covered tiles
         used_tiles = set()
@@ -46,14 +60,19 @@ def perform_search(puzzle: pycross.Picross):
             row, column, colour = item
             puzzle[row][column] = colour
             used_tiles.add((row, column))
+
         # check if it is solved
         if puzzle.is_complete():
             found = True
             break
+
+        # if using heuristic, remove previous heuristic to get past move costs
+
         # if not solved, reset the board
         for item in inputs:
             row, column, _ = item
             puzzle[row][column] = -1
+
         # add to the frontier
         for row in range(puzzle.height):
             for column in range(puzzle.width):
@@ -62,13 +81,16 @@ def perform_search(puzzle: pycross.Picross):
                         new_inputs = inputs.copy()
                         new_inputs.add((row, column, colour))
                         if frozenset(new_inputs) not in already_input:
-                            frontier.put((len(new_inputs), new_inputs))
+                            cost = len(new_inputs)
+                            if cost_function is not None:
+                                cost = prev_cost + cost_function(puzzle, (row, column, colour))
+                            frontier.put((cost, new_inputs))
                             already_input.add(frozenset(new_inputs))
-        if frontier.empty():
-            print("No Solution Found")
-            found = True
 
-    # found solution
+    if not found:
+        print("Solution Not Found.")
+
+    # return solved puzzle (if found) or reset puzzle (if not found)
     return puzzle
 
 
