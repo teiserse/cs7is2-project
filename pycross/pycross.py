@@ -1,4 +1,9 @@
 import json
+from functools import cache
+# We're doing a lot of iterating over lists over and over again, and just return the result:
+# So, if something is immutable (e.g. something derived from the line rules
+# but not the board state), we can use the @cache decorator to cache and optimise the result.
+# But this won't work on anything that depends on board state (i.e. filled in tiles)
 
 
 class Picross:
@@ -81,6 +86,7 @@ class Picross:
 
         return True
 
+    @cache
     def row_has_colour(self, row_index, colour):
         """
         Checks if a row has a particular colour -
@@ -93,6 +99,7 @@ class Picross:
 
         return False
 
+    @cache
     def column_has_colour(self, column_index, colour):
         """
         Checks if a column has a particular colour -
