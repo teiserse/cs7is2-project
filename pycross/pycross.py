@@ -1,5 +1,10 @@
 import json
-import os
+from functools import cache
+# We're doing a lot of iterating over lists over and over again, and just return the result:
+# So, if something is immutable (e.g. something derived from the line rules
+# but not the board state), we can use the @cache decorator to cache and optimise the result.
+# But this won't work on anything that depends on board state (i.e. filled in tiles)
+
 
 class Picross:
     """
@@ -21,6 +26,13 @@ class Picross:
         
         The rows/columns are defined as a list of tuples (colour, length).
         They represent the colours going from left to right on a row, and from up to down in a column.
+        
+        guide (works both for rows and columns):
+        self.rows = the list of rows
+        self.rows[row] = the list of rules in the row
+        self.rows[row][rule] = a rule in the row, can be a 2-ple or 2 element list
+        self.rows[row][rule][0] = the rule's colour
+        self.rows[row][rule][1] = the rule's length
         """
         self.rows = []
         self.columns = []
@@ -63,13 +75,78 @@ class Picross:
         """
         self.puzzle[key] = value
 
-    def row_complete(self, index):
+    def is_complete(self):
+        for row in range(self.height):
+            if not self.is_row_complete(row):
+                return False
+
+        for column in range(self.width):
+            if not self.is_column_complete(column):
+                return False
+
+        return True
+
+    @cache
+    def row_has_colour(self, row_index, colour):
+        """
+        Checks if a row has a particular colour -
+        i.e. can you use that colour in this row.
+        """
+        line = self.rows[row_index]
+        for rule in line:
+            if rule[0] == colour:
+                return True
+
+        return False
+
+    @cache
+    def column_has_colour(self, column_index, colour):
+        """
+        Checks if a column has a particular colour -
+        i.e. can you use that colour in this column.
+        """
+        line = self.columns[column_index]
+        for rule in line:
+            if rule[0] == colour:
+                return True
+
+        return False
+
+    @cache
+    def row_colour_proportion(self, row_index, colour):
+        """
+        Calculates how many tiles in a row are of the colour,
+        and divides the amount by the length of the row.
+        """
+        line = self.rows[row_index]
+        colour_tiles = 0
+        for rule in line:
+            if rule[0] == colour:
+                colour_tiles += rule[1]
+
+        return colour_tiles / self.width
+
+    @cache
+    def column_colour_proportion(self, column_index, colour):
+        """
+        Calculates how many tiles in a column are of the colour,
+        and divides the amount by the length of the column.
+        """
+        line = self.columns[column_index]
+        colour_tiles = 0
+        for rule in line:
+            if rule[0] == colour:
+                colour_tiles += rule[1]
+
+        return colour_tiles / self.height
+
+    def is_row_complete(self, index):
         """
         Function to check if a row is complete.
         """
         return self._check_complete(False, index)
 
-    def column_complete(self, index):
+    def is_column_complete(self, index):
         """
         Function to check if a column is complete.
         """
@@ -95,7 +172,9 @@ class Picross:
         ser_line = [x for x in ser_line if x[0] != -1 and x[0] != 0]
 
         for i in range(len(ser_line)):
-            if ser_line[i][0] != rule[i][0] and ser_line[i][1] != rule[i][1]:
+            if i >= len(rule):
+                return False
+            if ser_line[i][0] != rule[i][0] or ser_line[i][1] != rule[i][1]:
                 return False
 
         return len(ser_line) == len(rule)
@@ -240,12 +319,13 @@ def get_constraint_length(constraint):
 def from_json(json_string):
     """
     Helper function to create a Picross puzzle from a JSON file.
-    See "example.json" for an example.
+    See the "examples" folder for examples.
     """
     def as_picross(dct):
         if "picross" in dct:
             picross = Picross(dct["width"], dct["height"])
-            picross.colours = dct["colours"]
+            colours = {int(number): description for number, description in dct["colours"].items()}
+            picross.colours = colours
             picross.rows = dct["rows"]
             picross.columns = dct["columns"]
             return picross

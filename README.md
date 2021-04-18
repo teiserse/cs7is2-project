@@ -2,7 +2,7 @@
 
 ## Description
 
-Picross (also known as nonogram) is a game played on a two dimensional grid. A list of numbers area attached to each row and column. These numbers represent the squares that need to be filled in by the user. An empty picross grid (left) is shown below, along with its solved counterpart (right).
+Picross (also known as nonogram) is a game played on a two dimensional grid. A list of numbers are attached to each row and column. These numbers represent the squares that need to be filled in by the user. An empty picross grid (left) is shown below, along with its solved counterpart (right).
 
 <img src="https://coolbutuseless.github.io/img/nonogram/example-blank.png" width="250" height="250"> <img src="https://coolbutuseless.github.io/img/nonogram/example-solved.png" width="250" height="250"> [1]
 
@@ -14,7 +14,7 @@ Multi-coloured picross images also exist. An example is displayed below.
 
 ## Contributors
 
-Edvinas Teiserkis
+Edvinas Teiserskis
 
 
 Min Wu
