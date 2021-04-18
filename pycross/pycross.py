@@ -179,6 +179,142 @@ class Picross:
 
         return len(ser_line) == len(rule)
 
+    def get_possible_lines(self, index, row=True):
+        """
+        Function gathers information on puzzle and computes all permutations of a line given a row or column
+        at a given index
+        """
+        constraints = self.columns[index]
+        size = self.height
+        if row:
+            constraints = self.rows[index]
+            size = self.width
+        
+        min = make_min(constraints, size)
+        min_length = get_constraint_length(constraints)
+        results = get_permutations(min, min_length, size)
+        return results
+
+    def get_incomplete_lines(self):
+        """
+        Function returns the lines that are not completed
+        """
+        possible_rows = []
+        for i in range(self.height):
+            if not self.row_complete(i):
+                possible_rows.append(i)
+        
+        possible_cols = []
+        for i in range(self.width):
+            if not self.column_complete(i):
+                possible_cols.append(i)
+            
+        possible_lines = [possible_rows]
+        return possible_lines
+
+    def get_actions(self):
+        """
+        Function gathers a list of all the lines and outputs all possible permuations for each line given the state
+        of the puzzle
+        """
+        possible_lines = self.get_incomplete_lines()
+        actions = []
+        row = True
+        for i in possible_lines:
+            for index in i:
+                lines = self.get_possible_lines(index, row)
+                actions.append([index, row, lines])
+            row = False
+        
+        return actions
+
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
+
+def make_min(constraints, size):
+    """
+    Function makes the minimum line given a
+    list of constraints and the length of the line
+    """
+    line = []
+    min_length = get_constraint_length(constraints)
+    for i in range(len(constraints)):
+        fulls = constraints[i][1]
+        for j in range(fulls):
+            line.append(constraints[i][0])
+        if i+1 < len(constraints):
+            if constraints[i+1][0] == constraints[i][0]:
+                line.append(0)
+
+    if min_length < size:
+        for i in range(size - min_length):
+            line.append(0)
+    return line
+
+def rotate_list(l, num):
+    """
+    Function rotates a list l by num time.
+    Function shift to the right
+    """
+    for i in range(num):
+        temp = l.pop()
+        l.insert(0, temp)
+    return l
+
+def get_index(min, min_length):
+    """
+    Function returns the positions of boundaries between constraints given a min line
+    These indices are used to get permutations
+    """
+    temp = min
+    index = []
+    for i in range(min_length-1):
+        if i+1 < len(min) and min[i] != min[i+1]:
+            index.append(i+1)
+    return index
+
+def get_permutations(min, min_length, size):
+    """
+    Function recursively gets the permuations of a line given its min_length, line length and minimum line
+    Returns a list of all lines possible
+    """
+    result = []
+    result.append(min.copy())
+    if min_length >= size:
+        return result
+
+    temp = min.copy()
+    for i in range(size - min_length):
+        temp = rotate_list(temp, 1)
+        result.append(temp.copy())
+
+    index = get_index(min, min_length)
+    temp = min.copy()
+    for i in index:
+        temp.insert(i, 0)
+        temp.pop()
+        result = result + get_permutations(temp.copy(), min_length+1, size)
+        temp = min.copy()
+
+    return result
+
+def get_constraint_length(constraint):
+    """
+    Function computes a the minimum length of given constriants
+    Considers colour and number of blocks
+    """
+    sum = 0
+    num_spaces = 0
+    for i in range(len(constraint)):
+        sum += constraint[i][1]
+        if i+1 < len(constraint):
+            if constraint[i+1][0] == constraint[i][0]:
+                num_spaces += 1
+    
+    return sum + num_spaces
 
 def from_json(json_string):
     """
