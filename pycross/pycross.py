@@ -100,9 +100,9 @@ class Picross:
 
         return len(ser_line) == len(rule)
 
-    def get_possible_actions(self, index, row=True):
+    def get_possible_lines(self, index, row=True):
         """
-        Function gathers information on puzzel and computes all permutations of a line given a row or column
+        Function gathers information on puzzle and computes all permutations of a line given a row or column
         at a given index
         """
         constraints = self.columns[index]
@@ -116,7 +116,7 @@ class Picross:
         results = get_permutations(min, min_length, size)
         return results
 
-    def get_possible_lines(self):
+    def get_incomplete_lines(self):
         """
         Function returns the lines that are not completed
         """
@@ -130,8 +130,30 @@ class Picross:
             if not self.column_complete(i):
                 possible_cols.append(i)
             
-        possible_lines = [possible_rows, possible_cols]
+        possible_lines = [possible_rows]
         return possible_lines
+
+    def get_actions(self):
+        """
+        Function gathers a list of all the lines and outputs all possible permuations for each line given the state
+        of the puzzle
+        """
+        possible_lines = self.get_incomplete_lines()
+        actions = []
+        row = True
+        for i in possible_lines:
+            for index in i:
+                lines = self.get_possible_lines(index, row)
+                actions.append([index, row, lines])
+            row = False
+        
+        return actions
+
+    def get_width(self):
+        return self.width
+
+    def get_height(self):
+        return self.height
 
 def make_min(constraints, size):
     """
