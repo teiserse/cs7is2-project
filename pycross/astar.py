@@ -68,15 +68,14 @@ def perform_search(puzzle: pycross.Picross, cost_function=None, heuristic_functi
 
         # if using heuristic, remove previous heuristic to get past move costs
 
-        # if not solved, reset the board
-        for item in inputs:
-            row, column, _ = item
-            puzzle[row][column] = -1
-
         # add to the frontier
         for row in range(puzzle.height):
             for column in range(puzzle.width):
                 for colour in puzzle.colours.keys():
+                    # filter out invalid moves
+                    if not puzzle.row_has_colour(row, colour) or not puzzle.column_has_colour(column, colour):
+                        continue
+                    # and if the move is valid:
                     if (row, column) not in used_tiles:
                         new_inputs = inputs.copy()
                         new_inputs.add((row, column, colour))
@@ -86,6 +85,11 @@ def perform_search(puzzle: pycross.Picross, cost_function=None, heuristic_functi
                                 cost = prev_cost + cost_function(puzzle, (row, column, colour))
                             frontier.put((cost, new_inputs))
                             already_input.add(frozenset(new_inputs))
+
+        # if not solved, reset the board
+        for item in inputs:
+            row, column, _ = item
+            puzzle[row][column] = -1
 
     if not found:
         print("Solution Not Found.")
