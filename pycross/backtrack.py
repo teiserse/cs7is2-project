@@ -56,7 +56,7 @@ def row_filter(puzzle: pycross.Picross, row):
 Helper function that returns the filtered rows
 """
 def convert_rows(puzzle: pycross.Picross, index):
-    ans = puzzle.get_possible_lines(index)
+    ans = puzzle.get_possible_lines(index, True)
     all_rows = []
     for t in ans:
         if row_filter(puzzle, t) == True:
