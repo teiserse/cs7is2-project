@@ -29,6 +29,7 @@ def generate_row_rules(puzzle: pycross.Picross, row_index):
         colour_rules.append(i[0])
     return row_rules, colour_rules
 
+
 """
 Splits the rule pairs into separate column and colour lists
 """
@@ -39,24 +40,6 @@ def generate_column_rules(puzzle: pycross.Picross, column_index):
         column_rules.append(i[1])
     return column_rules, colour_rules
 
-"""
-Generates all possible permutations of a row
-"""
-def generate_rows(blocks, colours, length):
-    if not blocks: return ["0" * length]
-    if blocks[0] > length: return []
-
-    starts = length - blocks[0]
-    to_string = [str(int) for int in colours]
-
-    if len(blocks) == 1:
-        return [("0" * i + to_string[0] * blocks[0] + "0" * (starts - i)) for i in range(starts + 1)]
-
-    ans = []
-    for i in range(length - blocks[0]):
-        for sol in generate_rows(blocks[1:], colours[1:], starts - i):
-            ans.append("0" * i + to_string[0] * blocks[0] + sol)
-    return ans
 
 """
 This function cuts out some rows that are impossible
@@ -70,19 +53,14 @@ def row_filter(puzzle: pycross.Picross, row):
         else: return True
 
 """
-Helper function to convert the rows into lists of strings to integers
+Helper function that returns the filtered rows
 """
 def convert_rows(puzzle: pycross.Picross, index):
-    row_rules, colour_rules = generate_row_rules(puzzle, index)
-    ans = generate_rows(row_rules, colour_rules, puzzle.width)
-
+    ans = puzzle.get_possible_lines(index)
     all_rows = []
     for t in ans:
-        temp = []
-        for each in t:
-            temp.append(int(each))
-        if row_filter(puzzle, temp) == True:
-            all_rows.append(temp)
+        if row_filter(puzzle, t) == True:
+            all_rows.append(t)
     return all_rows, index
 
 """
@@ -92,7 +70,6 @@ It sees if there are more than 5 colour '1s', or more than 3
 colour '2s'. If there is, then we know that row combination cannot
 lead to a solution and it will return True
 """
-
 def constraint_check(puzzle: pycross.Picross):
     if type(puzzle.colours == int):
         for c in range(puzzle.width):
@@ -155,7 +132,6 @@ def constraint_search(puzzle: pycross.Picross):
 
 if __name__ == '__main__':
     puzzle = pycross.from_json(open("5x5.json").read())
-
     import time
     pre = time.perf_counter()
     cs = constraint_search(puzzle)
