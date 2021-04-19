@@ -131,8 +131,8 @@ def constraint_search(puzzle: pycross.Picross):
 
 
 if __name__ == '__main__':
-    puzzle = pycross.from_json(open("5x5.json").read())
     import time
+    puzzle = pycross.from_json(open("5x5.json").read())
     pre = time.perf_counter()
     cs = constraint_search(puzzle)
     post = time.perf_counter()
