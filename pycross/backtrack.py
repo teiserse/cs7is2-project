@@ -84,8 +84,11 @@ any constraints
 def constraint_search(puzzle: pycross.Picross):
     if puzzle.is_complete(): return puzzle
     solved_puzzle = puzzle
-
     fringe = Stack()
+    empty_row = []
+    for i in range(puzzle.width):
+        empty_row.append(-1)
+    
     possible_row, index = convert_rows(puzzle, 0)
     for r in possible_row:
         fringe.push([r, index])
@@ -96,6 +99,7 @@ def constraint_search(puzzle: pycross.Picross):
 
         """This is the backtracking here"""
         if constraint_check(solved_puzzle):
+            solved_puzzle.__setitem__(index, empty_row)
             continue
         if solved_puzzle.is_complete():
             return solved_puzzle
