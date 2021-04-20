@@ -102,7 +102,7 @@ def constraint_search(puzzle: pycross.Picross):
         elif index + 1 < puzzle.height:
             pr, i = convert_rows(puzzle, index + 1)
             for r in pr:
-                fringe.push([r, index + 1])
+                fringe.push([r, i])
 
     print('No solution found')
     return solved_puzzle
