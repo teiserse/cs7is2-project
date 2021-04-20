@@ -2,43 +2,21 @@ from __future__ import print_function
 import pycross
 
 class Stack:
-    "A container with a last-in-first-out (LIFO) queuing policy."
+    """A container with a last-in-first-out (LIFO) queuing policy."""
     def __init__(self):
         self.list = []
 
-    def push(self,item):
-        "Push 'item' onto the stack"
+    def push(self, item):
+        """Push 'item' onto the stack"""
         self.list.append(item)
 
     def pop(self):
-        "Pop the most recently pushed item from the stack"
+        """Pop the most recently pushed item from the stack"""
         return self.list.pop()
 
     def isEmpty(self):
-        "Returns true if the stack is empty"
+        """Returns true if the stack is empty"""
         return len(self.list) == 0
-
-
-"""
-Splits the rule pairs into separate row and colour lists
-"""
-def generate_row_rules(puzzle: pycross.Picross, row_index):
-    row_rules = []; colour_rules = []
-    for i in puzzle.rows[row_index]:
-        row_rules.append(i[1])
-        colour_rules.append(i[0])
-    return row_rules, colour_rules
-
-
-"""
-Splits the rule pairs into separate column and colour lists
-"""
-def generate_column_rules(puzzle: pycross.Picross, column_index):
-    column_rules = []; colour_rules = []
-    for i in puzzle.columns[column_index]:
-        colour_rules.append(i[0])
-        column_rules.append(i[1])
-    return column_rules, colour_rules
 
 
 """
@@ -131,8 +109,8 @@ def constraint_search(puzzle: pycross.Picross):
 
 
 if __name__ == '__main__':
+    puzzle = pycross.from_json(open("example/2.json").read())
     import time
-    puzzle = pycross.from_json(open("examples/2.json").read())
     pre = time.perf_counter()
     cs = constraint_search(puzzle)
     post = time.perf_counter()
