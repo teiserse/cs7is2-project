@@ -184,8 +184,9 @@ class Picross:
         Function gathers information on puzzle and computes all permutations of a line given a row or column
         at a given index
         """
-        constraints = self.columns[index]
-        size = self.height
+        if not row:
+            constraints = self.columns[index]
+            size = self.height
         if row:
             constraints = self.rows[index]
             size = self.width
