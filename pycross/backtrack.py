@@ -49,7 +49,7 @@ colour '2s'. If there is, then we know that row combination cannot
 lead to a solution and it will return True
 """
 def constraint_check(puzzle: pycross.Picross):
-    if type(puzzle.colours == int):
+    if type(puzzle.colours) == int:
         for c in range(puzzle.width):
             counter = 0
             summation = 0
