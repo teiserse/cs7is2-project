@@ -1,8 +1,8 @@
 import json
-from functools import cache
+from functools import lru_cache
 # We're doing a lot of iterating over lists over and over again, and just return the result:
 # So, if something is immutable (e.g. something derived from the line rules
-# but not the board state), we can use the @cache decorator to cache and optimise the result.
+# but not the board state), we can use the @lru_cache decorator to lru_cache and optimise the result.
 # But this won't work on anything that depends on board state (i.e. filled in tiles)
 
 
@@ -86,7 +86,7 @@ class Picross:
 
         return True
 
-    @cache
+    @lru_cache
     def row_has_colour(self, row_index, colour):
         """
         Checks if a row has a particular colour -
@@ -99,7 +99,7 @@ class Picross:
 
         return False
 
-    @cache
+    @lru_cache
     def column_has_colour(self, column_index, colour):
         """
         Checks if a column has a particular colour -
@@ -112,7 +112,7 @@ class Picross:
 
         return False
 
-    @cache
+    @lru_cache
     def row_colour_proportion(self, row_index, colour):
         """
         Calculates how many tiles in a row are of the colour,
@@ -126,7 +126,7 @@ class Picross:
 
         return colour_tiles / self.width
 
-    @cache
+    @lru_cache
     def column_colour_proportion(self, column_index, colour):
         """
         Calculates how many tiles in a column are of the colour,
@@ -184,8 +184,9 @@ class Picross:
         Function gathers information on puzzle and computes all permutations of a line given a row or column
         at a given index
         """
-        constraints = self.columns[index]
-        size = self.height
+        if not row:
+            constraints = self.columns[index]
+            size = self.height
         if row:
             constraints = self.rows[index]
             size = self.width
@@ -201,12 +202,12 @@ class Picross:
         """
         possible_rows = []
         for i in range(self.height):
-            if not self.row_complete(i):
+            if not self.is_row_complete(i):
                 possible_rows.append(i)
         
         possible_cols = []
         for i in range(self.width):
-            if not self.column_complete(i):
+            if not self.is_column_complete(i):
                 possible_cols.append(i)
             
         possible_lines = [possible_rows]
