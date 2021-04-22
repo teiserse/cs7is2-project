@@ -86,7 +86,6 @@ def constraint_search(puzzle: pycross.Picross):
     solved_puzzle = puzzle
     fringe = Stack()
     empty_row = []
-    prev_index = puzzle.height - 1
     for i in range(puzzle.width):
         empty_row.append(-1)
 
