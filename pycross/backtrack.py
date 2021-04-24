@@ -1,5 +1,5 @@
-from __future__ import print_function
 import pycross
+import time
 
 class Stack:
     """A container with a last-in-first-out (LIFO) queuing policy."""
@@ -83,6 +83,7 @@ any constraints
 """
 def constraint_search(puzzle: pycross.Picross):
     if puzzle.is_complete(): return puzzle
+    
     solved_puzzle = puzzle
     fringe = Stack()
     empty_row = []
@@ -94,7 +95,12 @@ def constraint_search(puzzle: pycross.Picross):
         fringe.push([r, index])
 
     while not fringe.isEmpty():
+        
         if solved_puzzle.is_complete():
+            for row in range(puzzle.height):
+                for column in range(puzzle.width)
+                    if puzzle[row][column] == -1:
+                        puzzle[row][column] = 0
             return solved_puzzle
 
         row, index = fringe.pop()
@@ -120,7 +126,6 @@ def constraint_search(puzzle: pycross.Picross):
 
 if __name__ == '__main__':
     puzzle = pycross.from_json(open("Nonograms/5x5Mono/clock.json").read())
-    import time
     pre = time.perf_counter()
     cs = constraint_search(puzzle)
     post = time.perf_counter()
