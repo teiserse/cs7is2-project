@@ -88,22 +88,28 @@ def constraint_search(puzzle: pycross.Picross):
     empty_row = []
     for i in range(puzzle.width):
         empty_row.append(-1)
-    
+
     possible_row, index = convert_rows(puzzle, 0)
     for r in possible_row:
         fringe.push([r, index])
 
     while not fringe.isEmpty():
+        if solved_puzzle.is_complete():
+            return solved_puzzle
+
         row, index = fringe.pop()
         solved_puzzle.__setitem__(index, row)
 
-        """This is the backtracking here"""
+        for i in range(index + 1, puzzle.height):
+            solved_puzzle.__setitem__(i, empty_row)
+
         if constraint_check(solved_puzzle):
-            solved_puzzle.__setitem__(index, empty_row)
+            for i in range(puzzle.height):
+                if i > index:
+                    solved_puzzle.__setitem__(i, empty_row)
             continue
-        if solved_puzzle.is_complete():
-            return solved_puzzle
-        elif index + 1 < puzzle.height:
+
+        if index + 1 < puzzle.height:
             pr, i = convert_rows(puzzle, index + 1)
             for r in pr:
                 fringe.push([r, i])
@@ -113,7 +119,7 @@ def constraint_search(puzzle: pycross.Picross):
 
 
 if __name__ == '__main__':
-    puzzle = pycross.from_json(open("example/2.json").read())
+    puzzle = pycross.from_json(open("Nonograms/5x5Mono/clock.json").read())
     import time
     pre = time.perf_counter()
     cs = constraint_search(puzzle)
