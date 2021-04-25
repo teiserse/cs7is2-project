@@ -153,7 +153,7 @@ if __name__ == '__main__':
     # x.colours = {1: "black"}
     # x.rows = [[[1, 2], [1, 2]], [[1, 5]]]
     # x.columns = [[[1, 2]], [[1, 2]], [[1, 1]], [[1, 2]], [[1, 2]]]
-    x = pycross.from_json(open("examples/2.json").read())
+    x = pycross.from_json(open("examples/5x5Monochrome/1.json").read())
 
     import time
     pre = time.perf_counter()

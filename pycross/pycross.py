@@ -1,5 +1,7 @@
 import json
 from functools import lru_cache
+
+
 # We're doing a lot of iterating over lists over and over again, and just return the result:
 # So, if something is immutable (e.g. something derived from the line rules
 # but not the board state), we can use the @lru_cache decorator to lru_cache and optimise the result.
@@ -179,18 +181,18 @@ class Picross:
 
         return len(ser_line) == len(rule)
 
+    @lru_cache
     def get_possible_lines(self, index, row=True):
         """
         Function gathers information on puzzle and computes all permutations of a line given a row or column
         at a given index
         """
-        if not row:
-            constraints = self.columns[index]
-            size = self.height
+        constraints = self.columns[index]
+        size = self.height
         if row:
             constraints = self.rows[index]
             size = self.width
-        
+
         min = make_min(constraints, size)
         min_length = get_constraint_length(constraints)
         results = get_permutations(min, min_length, size)
@@ -204,12 +206,12 @@ class Picross:
         for i in range(self.height):
             if not self.is_row_complete(i):
                 possible_rows.append(i)
-        
+
         possible_cols = []
         for i in range(self.width):
             if not self.is_column_complete(i):
                 possible_cols.append(i)
-            
+
         possible_lines = [possible_rows]
         return possible_lines
 
@@ -226,7 +228,7 @@ class Picross:
                 lines = self.get_possible_lines(index, row)
                 actions.append([index, row, lines])
             row = False
-        
+
         return actions
 
     def get_width(self):
@@ -234,6 +236,7 @@ class Picross:
 
     def get_height(self):
         return self.height
+
 
 def make_min(constraints, size):
     """
@@ -246,14 +249,15 @@ def make_min(constraints, size):
         fulls = constraints[i][1]
         for j in range(fulls):
             line.append(constraints[i][0])
-        if i+1 < len(constraints):
-            if constraints[i+1][0] == constraints[i][0]:
+        if i + 1 < len(constraints):
+            if constraints[i + 1][0] == constraints[i][0]:
                 line.append(0)
 
     if min_length < size:
         for i in range(size - min_length):
             line.append(0)
     return line
+
 
 def rotate_list(l, num):
     """
@@ -265,6 +269,7 @@ def rotate_list(l, num):
         l.insert(0, temp)
     return l
 
+
 def get_index(min, min_length):
     """
     Function returns the positions of boundaries between constraints given a min line
@@ -272,18 +277,18 @@ def get_index(min, min_length):
     """
     temp = min
     index = []
-    for i in range(min_length-1):
-        if i+1 < len(min) and min[i] != min[i+1]:
-            index.append(i+1)
+    for i in range(min_length - 1):
+        if i + 1 < len(min) and min[i] != min[i + 1]:
+            index.append(i + 1)
     return index
+
 
 def get_permutations(min, min_length, size):
     """
     Function recursively gets the permuations of a line given its min_length, line length and minimum line
     Returns a list of all lines possible
     """
-    result = []
-    result.append(min.copy())
+    result = [min.copy()]
     if min_length >= size:
         return result
 
@@ -297,10 +302,11 @@ def get_permutations(min, min_length, size):
     for i in index:
         temp.insert(i, 0)
         temp.pop()
-        result = result + get_permutations(temp.copy(), min_length+1, size)
+        result = result + get_permutations(temp.copy(), min_length + 1, size)
         temp = min.copy()
 
     return result
+
 
 def get_constraint_length(constraint):
     """
@@ -311,17 +317,19 @@ def get_constraint_length(constraint):
     num_spaces = 0
     for i in range(len(constraint)):
         sum += constraint[i][1]
-        if i+1 < len(constraint):
-            if constraint[i+1][0] == constraint[i][0]:
+        if i + 1 < len(constraint):
+            if constraint[i + 1][0] == constraint[i][0]:
                 num_spaces += 1
-    
+
     return sum + num_spaces
+
 
 def from_json(json_string):
     """
     Helper function to create a Picross puzzle from a JSON file.
     See the "examples" folder for examples.
     """
+
     def as_picross(dct):
         if "picross" in dct:
             picross = Picross(dct["width"], dct["height"])
