@@ -1,6 +1,5 @@
 import os, time
 import pycross
-import resource
 
 class Stack:
     """A container with a last-in-first-out (LIFO) queuing policy."""
@@ -131,7 +130,7 @@ if __name__ == '__main__':
     post = time.perf_counter()
     print(post - pre)
     print(cs)
-    
+
 
 
 
