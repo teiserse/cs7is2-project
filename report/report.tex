@@ -1,3 +1,4 @@
+% !BIB TS-program = 
 \documentclass{svproc}
 \usepackage{url}
 \def\UrlFont{\rmfamily}
@@ -15,21 +16,39 @@
 	\maketitle              % typeset the title of the contribution
 	
 	\begin{abstract}
-Picross, also known as Nonograms, is a wonderful series of games in which players use logic to solve puzzles that the cells in a grid must be marked or just left clear constrained by the numbers at the side of the grid. The least time to solve the puzzles is the key to win. In this case, our research provides a survey that analyzes and compares different search AI algorithms —— A-star, Q-learning, Depth-First Search(DFS), Constraint satisfaction problems (CSPs) to solve a 5x5 picross puzzles. Through the process of implementation and evaluation we prove the state-of-the-art of all these algorithms and we also find out their common aspects and differences, connections between methods, drawbacks and open problems. 
-		\keywords{artificial intelligence, A-star, Q-learning, CSPs}
+Research in Artificial Intelligence has always had a very strong relationship with games and game-playing. As Picross is a logic puzzle with simple rules and challenging solutions and in this case, our research provides a survey that analyzes and compares different search AI algorithms —— A-star, Q-learning, Constraint satisfaction problems (CSPs) and Genetic Algorithms(GA) to solve a 5x5 picross puzzles game. Through the process of implementation and evaluation we prove the state-of-the-art of all these algorithms and we also find out their common aspects and differences, connections between methods, drawbacks and open problems. 
+		\keywords{artificial intelligence, A-star, Q-learning, CSPs, Genetic Algorithms}
 	\end{abstract}
-	%
+	
 	
 	
 
 	\section{Introduction}
-	In this section, you should introduce your work: what are the motivations behind this work? What is the relevant problem that you are investigating? Why is it relevant?
-	Briefly, introduce the background information required to understand the problem and the concepts that you will develop.
+	Artificial intelligence (AI) is the emulation of human intelligence of computers that are designed to think and behave like humans. As AI has evolved to have a huge global influence, it operates by integrating vast volumes of data with quick, iterative analysis and intelligent algorithms, which enables the program to learn automatically from patterns or features in the data.
 	
-	This section should also contain the link to the recording of your presentation (college OneDrive link – please make sure sharing permissions are such that everyone with tcd email can access it)
+	Picross, also known as Nonograms, is a wonderful series of games in which players use logic to solve puzzles that the cells in a grid must be marked or just left clear constrained by the numbers at the side of the grid(as Figure 1 shows). The least time to solve the puzzles is the key to win. However, playing games like a human is other than thinking about games like a human or learning like one. There is a famous saying that game-playing is the Drosophila of AI. And yet in our research it could be that the task of playing picross, once it’s converted into the task of searching some certain nodes evaluated by time consumed, it is also a different kind of intelligence. 
+	
+	----------------------------
+	Figure 1: An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled with true. We mark black cells are true and cells left blank are false. 
+	
+	Our motivation is no more than analyzing the problem of picross and deduce what the best strategy among the 4 mentioned AI algorithms, which can be used to picross design feedback, content generation, or difficulty estimation. One potential use is in order for humans to use these computer-generated strategies, the strategies must be both efficient in the domain of interest and concisely articulated so that a designer can consider the whole strategy in their head. For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
+	
+	This paper presents a comparison of 4 different AI algorithms including A-star, Q-learning, CSP and GA that have been used to solve the picross puzzles. The paper also evaluates these algorithms based on their execution time, memoty usage and so on. And through the process of implementation and evaluation we prove the state-of-the-art of all these algorithms and we also find out their common aspects and differences, connections between methods, drawbacks and open problems. Our recording of presentation link of this research is xxx.
+
 	
 	\section{Related Work}
-	In this section you will discuss possible approaches to solve the problem you are addressing, justifying your choice of the 3 you have selected to evaluate. Also, briefly introduce the approaches you are evaluating with a specific emphasis on differences and similarities to the proposed approach(es).
+Picross, like other logic puzzles such as Sudoku, has special answers which can be solved by deducing pieces of the answer in any order. In Sudoku, the squares are filled with one number each while in Picross each square is either filled in or left blank. Prior work has also examined the solutions of logic puzzles, but most existing solvers are programs written from scratch for the express purpose of solving paint-by-number puzzles\cite{5.1.1,5.1.2,5.1.3,5.1.7}. Browne provides a deductive search algorithm that is intended to mimic the constraints and method of human solvers\cite{Browne}. The complexity of picross can be estimated by calculating the number of steps that can be solved one row/column at a time according to Batenburg and Kosters\cite{Batenburg and Kosters}. 
+
+Heuristic search is a technique that uses a heuristic value for optimizing the search. Many heuristic solving steps are given in order to determine the value of some pixels in a single row or column\cite{Salcedo}, and in order to decide which pixels can be assigned a certain value that they use run ranges\cite{CHYU}. The methodology behind is to assign an integer range to each row or column description, the lowest and largest pixel number can be used to contain the run’s black pixels corresponding to the definition of the integer. An example of applying heuristic steps to fill the pixels is Teal’s Nonogram Solver\cite{Teal}, the input for this solver is given by a single string containing the row and column definitions one by one. In other words, this solver runs through all rows and columns one by one, while applying heuristic steps in order to fill pixels. However, the solver leaves several pixels undetermined, which can clearly be filled by logic decisions. These are pixels that need input from the last pixels in a run, usually at the end of a row or column. Based on this, we will choose GA to solve the picross puzzles because as GA is a class of heuristic optimization methods, it mimics the process of natural evolution by modifying a population of individual solutions which makes it easier to achieve our goal. A-star is another heuristic algorithm that is commonly used in pathfinding and graph traversal, which is the method of mapping an easily traversable path between multiple nodes\cite{astar}. 
+
+The Backtracking Heuristic (BH) methodology consists in to construct blocks of items by combination between heuristic, that solve mathematical programming models, and backtrack search algorithm to figure out the best heuristics and their best ordering\cite{BH}.
+
+Backtracking Search for CSP: Some hobbyists have created programs that solve Sudoku puzzles using a backtracking algorithm, which is a form of brute force search\cite{brute}. Backtracking is a depth-first search (as comparison to a breadth-first search) so it can completely investigate one branch to a potential solution before going on to another. A brute force algorithm visits the empty cells in some order, filling in digits sequentially, or backtracking when the number is found to be not valid\cite{Peter,lecture}.
+
+Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints could be presented as an image, and hence Mehta chose the algorithm used for Sudoku to be Deep Q-Learning. The Q agent is trained with no rules of the game, with only the reward corresponding to each state's action. This paper\cite{Qlearning} contributes to choosing the reward structure, state representation, and formulation of the deep neural network. 
+
+
+
 	
 	\section{Problem Definition and Algorithm}
 	This section formalises the problem you are addressing and the models used to solve it. This section should provide a technical discussion of the chosen/implemented algorithms. A pseudocode description of the algorithm(s) can also be beneficial to a clear explanation. It is also possible to provide one example that clarifies the way an algorithm works. It is important to highlight in this section the possible parameters involved in the model and their impact, as well as all the implementation choices that can impact the algorithm.
@@ -53,34 +72,75 @@ Picross, also known as Nonograms, is a wonderful series of games in which player
 	\begin{thebibliography}{6}
 		%
 		
-		\bibitem {smit:wat}
-		Smith, T.F., Waterman, M.S.: Identification of common molecular subsequences.
-		J. Mol. Biol. 147, 195?197 (1981). \url{doi:10.1016/0022-2836(81)90087-5}
+		\bibitem {Browne}
+		Cameron Browne. 2013. Deductive search for logic puzzles. In Computational
+		Intelligence in Games (CIG), 2013 IEEE Conference on. IEEE.
 		
-		\bibitem {may:ehr:stein}
-		May, P., Ehrlich, H.-C., Steinke, T.: ZIB structure prediction pipeline:
-		composing a complex biological workflow through web services.
-		In: Nagel, W.E., Walter, W.V., Lehner, W. (eds.) Euro-Par 2006.
-		LNCS, vol. 4128, pp. 1148?1158. Springer, Heidelberg (2006).
-		\url{doi:10.1007/11823285_121}
+		\bibitem {Batenburg and Kosters}
+		K Joost Batenburg and Walter A Kosters. 2012. On the difficulty of Nonograms.
+		ICGA Journal 35, 4 (2012), 195–205.
 		
-		\bibitem {fost:kes}
-		Foster, I., Kesselman, C.: The Grid: Blueprint for a New Computing Infrastructure.
-		Morgan Kaufmann, San Francisco (1999)
 		
-		\bibitem {czaj:fitz}
-		Czajkowski, K., Fitzgerald, S., Foster, I., Kesselman, C.: Grid information services
-		for distributed resource sharing. In: 10th IEEE International Symposium
-		on High Performance Distributed Computing, pp. 181?184. IEEE Press, New York (2001).
-		\url{doi: 10.1109/HPDC.2001.945188}
+		\bibitem {5.1.1}
+		Jan Wolter's pbnsolve Program
+		\url{https://webpbn.com/pbnsolve.html}
 		
-		\bibitem {fo:kes:nic:tue}
-		Foster, I., Kesselman, C., Nick, J., Tuecke, S.: The physiology of the grid: an open grid services architecture for distributed systems integration. Technical report, Global Grid
-		Forum (2002)
+		\bibitem{5.1.2}
+		Mirek and Petr Olšák's Nonogram Solver
+		\url{http://www.olsak.net/grid.html#English}
 		
-		\bibitem {onlyurl}
-		National Center for Biotechnology Information. \url{http://www.ncbi.nlm.nih.gov}
+		\bibitem{5.1.3}
+		Steve Simpson's Nonogram Solver
+		\url{http://www.comp.lancs.ac.uk/~ss/software/nonowimp/}
 		
+		\bibitem{5.1.7}
+		Jakub Wilk's Nonogram Solver
+		\url{http://jwilk.nfshost.com/software/nonogram.html}
+		
+		\bibitem{Teal}
+		\url{http://a.teall.info/nonogram}
+		
+		\bibitem{Salcedo}
+		S. Salcedo-Sanz, E.G. Ort’iz-Garc’ia et al., Solving Japanese Puzzles with
+		Heuristics, IEEE Symposium on Computational Intelligence and Games,
+		2007, 224-231, CIG, 2007.
+		
+		\bibitem{CHYU}
+		C.H. Yu, H.L. Lee, L.H. Chen, An efficient algorithm for solving nonograms, Springer Science+Business Media, Springer Verlag, Applied Intelligence 35(1): 18-31, 2011
+		
+		\bibitem{Peter}
+		Norvig, Peter. "Solving Every Sudoku Puzzle". Peter Norvig (personal website). Retrieved 24 December 2016.
+		\url{http://www.norvig.com/sudoku.html}
+		
+		\bibitem{lecture}
+		Zelenski, Julie (July 16, 2008). Lecture 11 | Programming Abstractions (Stanford). Stanford Computer Science Department.
+		\url{https://www.youtube.com/watch?v=p-gpaIGRCQI}
+		
+		\bibitem{brute}
+		 Brute Force Search, December 14th, 2009.
+		\url{http://intelligence.worldofcomputing/brute-force-search}
+
+		
+		\bibitem{picross1}
+		Andrew C Stuart. 2007. The Logic of Sudoku. Michael Mepham Publishing.
+		
+		\bibitem{picross2}
+		Andrew C Stuart. 2012. Sudoku Creation and Grading. (January 2012). 
+		\url{http://www.sudokuwiki.org/Sudoku Creation and Grading.pdf} 
+		[Online, accessed 8 Mar 2017].
+		
+		\bibitem{Qlearning}
+		Mehta, Anav. "Reinforcement Learning For Constraint Satisfaction Game Agents (15-Puzzle, Minesweeper, 2048, and Sudoku)." arXiv preprint arXiv:2102.06019 (2021).
+		
+		\bibitem{astar}
+		Solving 8-Puzzle using A* Algorithm
+		\url{https://blog.goodaudience.com/solving-8-puzzle-using-a-algorithm-7b509c331288}
+		
+		\bibitem{BH}
+		Jonatã L., Araújo P., Pinheiro P.R. (2011) Applying Backtracking Heuristics for Constrained Two-Dimensional Guillotine Cutting Problems. In: Liu B., Chai C. (eds) Information Computing and Applications. ICICA 2011. Lecture Notes in Computer Science, vol 7030. Springer, Berlin, Heidelberg.
+
+
+
 		
 	\end{thebibliography}
 \end{document}
