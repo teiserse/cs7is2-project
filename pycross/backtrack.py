@@ -72,7 +72,8 @@ def constraint_check(puzzle: pycross.Picross):
                         counter += 1
                 pairs = puzzle.columns[c]
                 for item in pairs:
-                    summation += item[1]
+                    if item[0] == colour:
+                        summation += item[1]
                 if counter > summation:
                     return True
 
