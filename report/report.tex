@@ -1,6 +1,7 @@
 % !BIB TS-program =
 \documentclass{svproc}
 \usepackage{url}
+\usepackage{graphicx}
 \def\UrlFont{\rmfamily}
 
 
@@ -9,7 +10,7 @@
 \title{Analysis of different AI Strategies for Solving Picross Puzzles}
 \subtitle{CS7IS2 Project (2020/2021)}
 \author{Andrej Liadov, Edvinas Teiserskis, Min Wu, Edmond Cheng, Adam McQuade}
-
+\authorrunning{A. Liadov, E. Teiserskis, M. Wu, E. Cheng, A. McQuade}
 \institute{
   \email{liadova@tcd.ie}, \email{teiserse@tcd.ie}, \email{wumi@tcd.ie}, \email{chenge@tcd.ie}, \email{amcquade@tcd.ie}}
 
@@ -27,8 +28,11 @@ Artificial intelligence (AI) is the emulation of human intelligence of computers
 
 Picross, also known as Nonograms, is a wonderful series of games in which players use logic to solve puzzles that the cells in a grid must be marked or just left clear constrained by the numbers at the side of the grid(as Figure 1 shows). The least time to solve the puzzles is the key to win. However, playing games like a human is other than thinking about games like a human or learning like one. There is a famous saying that game-playing is the Drosophila of AI. And yet in our research it could be that the task of playing picross, once it’s converted into the task of searching some certain nodes evaluated by time consumed, it is also a different kind of intelligence.
 
-	----------------------------
-Figure 1: An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled with true. We mark black cells are true and cells left blank are false.
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\textwidth]{picross1.png}
+  \caption{An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled with true. We mark black cells are true and cells left blank are false.}
+\end{figure}
 
 Our motivation is no more than analyzing the problem of picross and deduce what the best strategy among the 4 mentioned AI algorithms, which can be used to picross design feedback, content generation, or difficulty estimation. One potential use is in order for humans to use these computer-generated strategies, the strategies must be both efficient in the domain of interest and concisely articulated so that a designer can consider the whole strategy in their head. For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
 
