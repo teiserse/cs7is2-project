@@ -196,7 +196,7 @@ class Picross:
         min = make_min(constraints, size)
         min_length = get_constraint_length(constraints)
         results = get_permutations(min, min_length, size)
-        return results
+        return [list(x) for x in set(tuple(x) for x in results)]
 
     def get_incomplete_lines(self):
         """

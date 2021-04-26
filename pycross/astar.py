@@ -1,5 +1,6 @@
 from queue import PriorityQueue
 import pycross
+from functools import lru_cache
 
 
 # notes
@@ -148,11 +149,25 @@ def cost_mul_function(puzzle: pycross.Picross, move):
     return row_cost * column_cost
 
 
+def portion_of_possibles_heuristic(puzzle):
+    """
+    For the heuristic values, we look into how many of the possible
+    variants of a line/column can we complete right now.
+
+    The higher number of possibilities that remain, the farther
+    away we are from a potential solution?
+
+    Or would we potentially want to reward a more general answer?
+    like if we have a line of 3 and current state of ??1??, that's the best
+    option (guaranteed, actually), so that should qualify as some sort of
+    free action?
+
+    It's hard to say if we're actually doing filtering or some such at this point
+    """
+    pass
+
+
 if __name__ == '__main__':
-    # x = pycross.Picross(5, 2)
-    # x.colours = {1: "black"}
-    # x.rows = [[[1, 2], [1, 2]], [[1, 5]]]
-    # x.columns = [[[1, 2]], [[1, 2]], [[1, 1]], [[1, 2]], [[1, 2]]]
     x = pycross.from_json(open("examples/5x5Monochrome/1.json").read())
 
     import time
