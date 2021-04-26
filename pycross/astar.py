@@ -14,6 +14,8 @@ from functools import lru_cache
 # - - a tuple of (x, y, colour)?
 # - currently will be fed in an empty puzzle. Might be changed later in order to take in half-complete ones
 # or even potentially wrongly filled ones (the last one will be quite hard, but possible?).
+# If no heuristic is used, then the search is Uniform Cost Search.
+# if *only* heuristic is used, then the search is Greedy Best-First.
 
 
 def perform_search(puzzle: pycross.Picross, cost_function=None, heuristic_function=None):

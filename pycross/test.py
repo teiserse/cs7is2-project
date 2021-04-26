@@ -17,8 +17,11 @@ TIMEOUT = 120
 
 
 def run_test(puzzle, solver_function, send_queue):
+    pre = time.perf_counter()
     res_puzzle = solver_function(puzzle)
-    send_queue.put(res_puzzle)
+    post = time.perf_counter()
+    solve_time = post - pre
+    send_queue.put((solve_time, res_puzzle))
 
 
 if __name__ == '__main__':
@@ -82,12 +85,11 @@ if __name__ == '__main__':
 
                 test_process = Process(target=run_test, args=(curr_puzzle, test_function, res_queue))
 
-                pre = time.perf_counter()
                 test_process.start()
                 test_process.join(TIMEOUT)
-                post = time.perf_counter()
-                solve_time = post - pre
                 if test_process.is_alive():
+                    test_process.terminate()
+                    test_process.join()
                     if args.compact:
                         print(f"{case} - Timeout after {TIMEOUT} seconds.")
                         if args.log:
@@ -99,16 +101,19 @@ if __name__ == '__main__':
                             print(f"Timeout - Not solved after {TIMEOUT} seconds.", file=logfile)
                             print("", file=logfile)
                 else:
+                    solve_time, result = res_queue.get()
                     if args.compact:
-                        print(f"{case} - Solved after {solve_time:.3f} seconds.")
+                        print(f"{case} - Solved after {solve_time:.4f} seconds.")
                         if args.log:
-                            print(f"{case} - Solved after {solve_time:.3f} seconds.", file=logfile)
+                            print(f"{case} - Solved after {solve_time:.4f} seconds.", file=logfile)
                     else:
-                        result = res_queue.get()
-                        print(f"Solved - {solve_time:.3f} seconds.")
+                        print(f"Solved - {solve_time:.4f} seconds.")
                         print("Puzzle:")
                         print(result)
                         if args.log:
-                            print(f"Solved - {solve_time:.3f} seconds.", file=logfile)
+                            print(f"Solved - {solve_time:.4f} seconds.", file=logfile)
                             print("Puzzle:", file=logfile)
                             print(result, file=logfile)
+
+    if logfile is not None:
+        logfile.close()
