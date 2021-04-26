@@ -6,6 +6,7 @@ import os
 import argparse
 import functools
 import time
+from datetime import datetime
 from multiprocessing import Process, Queue
 
 import pycross
@@ -27,6 +28,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run test cases on the algorithms made for the project.")
     parser.add_argument('-a', '--algorithm', choices=["astar", "csp"], required=True, help="which algorithm(s) to run")
     parser.add_argument('-t', '--testcase', required=True, help="which testcase(s) to run")
+    parser.add_argument('-l', '--log', default=False, action="store_true", help="output test results to log file")
+    parser.add_argument('-c', '--compact', default=False, action="store_true",
+                        help="reduce size of log, not print puzzle")
 
     args = parser.parse_args()
 
@@ -36,6 +40,12 @@ if __name__ == '__main__':
         test_function = backtrack.constraint_search
 
     print(f"Selected algorithm: {args.algorithm}")
+
+    # if outputting to logfile, open file locally
+    logfile = None
+    if args.log:
+        logfile = open(f"testlog_{datetime.now().strftime('%Y-%m-%dT%H_%M_%S')}.txt", "w")
+        print(f"Selected algorithm: {args.algorithm}", file=logfile)
 
     # set the cwd to the python files, in case the script
     # is called from a different cwd.
@@ -55,11 +65,19 @@ if __name__ == '__main__':
         # will improve later
         if test_set.startswith(args.testcase):
             print(f"Running {test_set}:")
+            if args.log:
+                print(f"Running {test_set}:", file=logfile)
             for case in test_cases:
-                print(f"Loading {case}...")
+                if not args.compact:
+                    print(f"Loading {case}...")
+                    if args.log:
+                        print(f"Loading {case}...", file=logfile)
                 # Import the puzzle (probably want to do error checks on this)
                 curr_puzzle = pycross.from_json(open(case).read())
-                print(f"Beginning test on {case}...")
+                if not args.compact:
+                    print(f"Beginning test on {case}...")
+                    if args.log:
+                        print(f"Beginning test on {case}...", file=logfile)
                 # Start solving!
 
                 test_process = Process(target=run_test, args=(curr_puzzle, test_function, res_queue))
@@ -70,10 +88,27 @@ if __name__ == '__main__':
                 post = time.perf_counter()
                 solve_time = post - pre
                 if test_process.is_alive():
-                    print(f"Timeout - Not solved after {TIMEOUT} seconds.")
-                    print()
+                    if args.compact:
+                        print(f"{case} - Timeout after {TIMEOUT} seconds.")
+                        if args.log:
+                            print(f"{case} - Timeout after {TIMEOUT} seconds.", file=logfile)
+                    else:
+                        print(f"Timeout - Not solved after {TIMEOUT} seconds.")
+                        print()
+                        if args.log:
+                            print(f"Timeout - Not solved after {TIMEOUT} seconds.", file=logfile)
+                            print("", file=logfile)
                 else:
-                    result = res_queue.get()
-                    print(f"Solved - {solve_time:.3f} seconds.")
-                    print("Puzzle:")
-                    print(result)
+                    if args.compact:
+                        print(f"{case} - Solved after {solve_time:.3f} seconds.")
+                        if args.log:
+                            print(f"{case} - Solved after {solve_time:.3f} seconds.", file=logfile)
+                    else:
+                        result = res_queue.get()
+                        print(f"Solved - {solve_time:.3f} seconds.")
+                        print("Puzzle:")
+                        print(result)
+                        if args.log:
+                            print(f"Solved - {solve_time:.3f} seconds.", file=logfile)
+                            print("Puzzle:", file=logfile)
+                            print(result, file=logfile)
