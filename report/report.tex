@@ -2,6 +2,9 @@
 \documentclass{svproc}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 \def\UrlFont{\rmfamily}
 
 
@@ -53,6 +56,46 @@ Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints c
 
 \section{Problem Definition and Algorithm}
 This section formalises the problem you are addressing and the models used to solve it. This section should provide a technical discussion of the chosen/implemented algorithms. A pseudocode description of the algorithm(s) can also be beneficial to a clear explanation. It is also possible to provide one example that clarifies the way an algorithm works. It is important to highlight in this section the possible parameters involved in the model and their impact, as well as all the implementation choices that can impact the algorithm.
+
+\subsection{Constraint Programming}
+The basis of the constraint programming algorithm applied was backtracking, with constraint propagation. Depth first search was used as the backend to apply backtracking. The algorithm starts off with an empty puzzle. All permutations of the first row are generated and filtered. The filtering process here refers to  constraint propagation. Constraint propagation is applied as follows:
+
+\begin{enumerate}
+    \item Generate all permutation of row
+    \item For each row, check if the column constraint is broken. A column constraint is broken when that column does not contain that colour.
+    \item Return list of all feasible rows
+\end{enumerate}
+
+The returned list of rows is used to set the states of the backtracking algorithm. Every time a row is set into the nonogram puzzle, the state of the nonogram is checked. Every column in the puzzle is checked. If the number of occurrences of any given colour is greater than the what the constraints dictate, then that row is removed. Figure \ref{fig:Backtrack} below displays this process. This checking is done every time a new row is added.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.36]{Backtracking.png}
+    \caption{Backtracking}
+    \label{fig:Backtrack}
+\end{figure}
+
+The overall algorithm is shown below.
+
+\begin{algorithm}
+    \caption{CSP Algorithm}\label{euclid}
+    \begin{algorithmic}[1]
+        \State $\textit{stack} = \text{LIFO\_stack}$
+        \State $\textit{all\_rows} = \text{generate\_all\_rows[row\_index]}$
+        \State $\textit{viable\_rows} = \text{filter\_rows(all\_rows)}$
+        \While {$\textit{stack } \text{!= } \textit{empty}$}
+        \State $\textit{row} = \text{stack.pop}$
+        \State $\text{puzzle.insert\_row(row)}$
+        \State $\textit{check} = \textit{puzzle.check\_constraints}$
+        \If {$check == False$}
+        \State $\text{puzzle.delete\_row(row)} \to \text{continue}$
+        \EndIf
+        \While {$\textit{index} < \textit{puzzle.height}$}
+        \State $\textit{stack.push(generate\_all\_rows(index)}$
+        \EndWhile
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
 
 \subsection{Subsection Title}
 
