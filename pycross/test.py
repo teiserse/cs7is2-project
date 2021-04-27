@@ -13,7 +13,7 @@ import pycross
 import astar
 import backtrack
 
-TIMEOUT = 120
+TIMEOUT = 180
 
 
 def run_test(puzzle, solver_function, send_queue):
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--algorithm', choices=["astar", "csp"], required=True, help="which algorithm(s) to run")
     parser.add_argument('-t', '--testcase', required=True, help="which testcase(s) to run")
     parser.add_argument('-l', '--log', default=False, action="store_true", help="output test results to log file")
-    parser.add_argument('-c', '--compact', default=False, action="store_true",
+    parser.add_argument('-c', '--compact', default=True, action="store_true",
                         help="reduce size of log, not print puzzle")
 
     args = parser.parse_args()
