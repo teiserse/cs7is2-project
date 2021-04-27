@@ -187,13 +187,12 @@ class Picross:
         Function gathers information on puzzle and computes all permutations of a line given a row or column
         at a given index
         """
-        if row:
-            constraints = self.rows[index]
-            size = self.width
-
         if not row:
             constraints = self.columns[index]
             size = self.height
+        if row:
+            constraints = self.rows[index]
+            size = self.width
 
         min = make_min(constraints, size)
         min_length = get_constraint_length(constraints)
