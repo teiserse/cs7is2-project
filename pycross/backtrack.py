@@ -1,8 +1,11 @@
 import os, time
 import pycross
+import resource
+
 
 class Stack:
     """A container with a last-in-first-out (LIFO) queuing policy."""
+
     def __init__(self):
         self.list = []
 
@@ -24,15 +27,23 @@ This function cuts out some rows that are impossible
 i.e. column doesn't have that colour 
 (is this constraint propagation?)
 """
+
+
 def row_filter(puzzle: pycross.Picross, row):
     for c in range(puzzle.width):
-        if row[c] == 0: continue
-        elif not puzzle.column_has_colour(c, row[c]): return False
-        else: return True
+        if row[c] == 0:
+            continue
+        elif not puzzle.column_has_colour(c, row[c]):
+            return False
+        else:
+            return True
+
 
 """
 Helper function that returns the filtered rows
 """
+
+
 def convert_rows(puzzle: pycross.Picross, index):
     ans = puzzle.get_possible_lines(index, True)
     all_rows = []
@@ -41,6 +52,7 @@ def convert_rows(puzzle: pycross.Picross, index):
             all_rows.append(t)
     return all_rows, index
 
+
 """
 Checks to see if the column constraint is broken
 For example, if the column was [1,3][1,2][2,3][3,4]
@@ -48,6 +60,8 @@ It sees if there are more than 5 colour '1s', or more than 3
 colour '2s'. If there is, then we know that row combination cannot
 lead to a solution and it will return True
 """
+
+
 def constraint_check(puzzle: pycross.Picross):
     if type(puzzle.colours) == int:
         for c in range(puzzle.width):
@@ -77,11 +91,14 @@ def constraint_check(puzzle: pycross.Picross):
                 if counter > summation:
                     return True
 
+
 """
 Using depth first search to find a solution for the nonogram
 We backtrack though if the current row combinations break 
 any constraints
 """
+
+
 def constraint_search(puzzle: pycross.Picross):
     solved_puzzle = puzzle
     fringe = Stack()
@@ -121,16 +138,3 @@ def constraint_search(puzzle: pycross.Picross):
 
     print('No solution found')
     return solved_puzzle
-
-
-if __name__ == '__main__':
-    puzzle = pycross.from_json(open("Nonograms/10x10Coloured/watermelon.json").read())
-    pre = time.perf_counter()
-    cs = constraint_search(puzzle)
-    post = time.perf_counter()
-    print(post - pre)
-    print(cs)
-
-
-
-
