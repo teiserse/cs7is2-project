@@ -56,6 +56,11 @@ Backtracking Search for CSP: Some hobbyists have created programs that solve Sud
 
 Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints could be presented as an image, and hence Mehta chose the algorithm used for Sudoku to be Deep Q-Learning. The Q agent is trained with no rules of the game, with only the reward corresponding to each state's action. This paper\cite{Qlearning} contributes to choosing the reward structure, state representation, and formulation of the deep neural network.
 
+Genetic algorithms have found much use in puzzle-based problem solving. According to \cite{geneticAlgo}, genetic algorithms are well suited for multi-objective optimisation problems, such as sudoku puzzles. Search algorithms are a commonly deployed in games to find an optimal solution to a problem with many path options. A problem encountered by search algorithms is the high time and space complexities required when the search domain becomes exceedingly large. Genetic algorithms are a way of mitigating this downside of search algorithms with respect to solution searching, and have been demonstrated as effective in solving other constraint based puzzles such as sudoku.
+
+A genetic algorithm is a stochastic optimization algorithm. It takes inspiration from biological ideas such as the theory of evolution put forth by Charles Darwin. In this theory, genetic characteristics are passed down through successive generations following successful reproduction. Successful production of offspring is dependent on many factors, including the suitability of the parents to the local environment. When applied to optimisation algorithms, parents may be thought of as an instance of an agent attempting to reach a goal. A generation is a population of these instances with slight differences between their characteristic parameters. Following each iteration of the agents attempting to reach a goal state, the agents with the best progress are given a higher probability of producing offspring. The next generation is produced as a function of this probability. Thus, each cohort of agents is a slight modification of the previous population, weighted towards the most successful members of the previous generation. Over many iterations, the population should become optimized to the environment, thus having more success in reaching the goal state. 
+
+
 
 \section{Problem Definition and Algorithm}
 This section formalises the problem you are addressing and the models used to solve it. This section should provide a technical discussion of the chosen/implemented algorithms. A pseudocode description of the algorithm(s) can also be beneficial to a clear explanation. It is also possible to provide one example that clarifies the way an algorithm works. It is important to highlight in this section the possible parameters involved in the model and their impact, as well as all the implementation choices that can impact the algorithm.
@@ -200,6 +205,10 @@ Mehta, Anav. "Reinforcement Learning For Constraint Satisfaction Game Agents (15
 \bibitem{astar}
 Solving 8-Puzzle using A* Algorithm
 \url{https://blog.goodaudience.com/solving-8-puzzle-using-a-algorithm-7b509c331288}
+
+\bibitem{geneticAlgo}
+Using genetic algorithms to solve sudoku puzzles
+\url{https://ieeexplore.ieee.org/document/4424632}
 
 \bibitem{BH}
 Jonatã L., Araújo P., Pinheiro P.R. (2011) Applying Backtracking Heuristics for Constrained Two-Dimensional Guillotine Cutting Problems. In: Liu B., Chai C. (eds) Information Computing and Applications. ICICA 2011. Lecture Notes in Computer Science, vol 7030. Springer, Berlin, Heidelberg.
