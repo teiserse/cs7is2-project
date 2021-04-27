@@ -1,7 +1,4 @@
-import os, time
 import pycross
-import resource
-
 
 class Stack:
     """A container with a last-in-first-out (LIFO) queuing policy."""
