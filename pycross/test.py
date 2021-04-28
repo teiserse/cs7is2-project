@@ -1,7 +1,6 @@
 """
 Script in order to run tests on the project files.
 """
-import sys
 import os
 import argparse
 import functools
@@ -10,10 +9,10 @@ from datetime import datetime
 from multiprocessing import Process, Queue
 
 import pycross
-import astar
+import search
 import backtrack
 
-TIMEOUT = 180
+TIMEOUT = 180  # The time in seconds after which a test is terminated.
 
 
 def run_test(puzzle, solver_function, send_queue):
@@ -29,7 +28,7 @@ if __name__ == '__main__':
     res_queue = Queue()
 
     parser = argparse.ArgumentParser(description="Run test cases on the algorithms made for the project.")
-    parser.add_argument('-a', '--algorithm', choices=["astar", "csp"], required=True, help="which algorithm(s) to run")
+    parser.add_argument('-a', '--algorithm', choices=["search", "csp"], required=True, help="which algorithm(s) to run")
     parser.add_argument('-t', '--testcase', required=True, help="which testcase(s) to run")
     parser.add_argument('-l', '--log', default=False, action="store_true", help="output test results to log file")
     parser.add_argument('-c', '--compact', default=True, action="store_true",
@@ -38,7 +37,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Do extra things to select algorithm here
-    test_function = functools.partial(astar.perform_search, cost_function=astar.cost_mul_function)
+    # Default to search so that the IDE shuts up
+    test_function = functools.partial(search.perform_search, cost_function=search.cost_mul_function)
     if args.algorithm == "csp":
         test_function = backtrack.constraint_search
 
