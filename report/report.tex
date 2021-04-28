@@ -126,7 +126,13 @@ The overall algorithm is shown below.
 \end{algorithm}
 
 \subsection{Genetic Algorithms}
-genetic algorithm text goes here
+The approach taken in this project follows the typical genetic algorithm design implementation. The programme reads the rules file which determines the constraints for each nonogram puzzle. 
+
+Selection: the parents for the next generation are selected based on a metric known as fitness. In this implementation, fitness is a measure of how many of the constraints are left unsatisfied by a parent solution. The agents are sorted by those with the lowest number of unsatisfied constraints and these are more likely to be parents.
+
+Crossover: is the process of combining the characteristics of two parents to form a child. Using a probability function, a random split of each of two parents characteristics is taken and recombined into a new characteristic. This is undertaken for each pair of parents at the end of an iteration to create the new generation.
+
+Mutation: this is the process of randomly altering minor details in the characteristics of the new generation of agents. In this case it implies that a random block within the nonogram will be flipped from filled to unfilled.
 
 \section{Experimental Results}
 	This section should provide the details of the evaluation. Specifically:
