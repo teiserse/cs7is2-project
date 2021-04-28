@@ -1,22 +1,12 @@
 from queue import PriorityQueue
 import pycross
-from functools import lru_cache
 
 
-# notes
-# - start with a dumb queue and go from there.
-# - check the a* notes to figure out a good heuristic.
-# - hold up - if the action to draw any square is the same, is this even a*?
-# can we skip that step and do greedy first search?
-# or maybe we can do some weird thing with the action weight?
-# - remember - this is not going to be good because search is bad for this type of thing.
-# - Encode the solution as a set of filling in because order doesn't matter? also avoids directly needing the 2D grid
-# - - a tuple of (x, y, colour)?
-# - currently will be fed in an empty puzzle. Might be changed later in order to take in half-complete ones
-# or even potentially wrongly filled ones (the last one will be quite hard, but possible?).
-# If no heuristic is used, then the search is Uniform Cost Search.
-# if *only* heuristic is used, then the search is Greedy Best-First.
-
+# This originally started as an attempt to define a-star search,
+# But due to the difficulty of defining a sensible and usable heuristic,
+# The extenuating circumstances under which we are working in,
+# And the fact that *nothing* can stop this method from sucking anyway,
+# We ended up not writing a heuristic and just running a uniform cost search.
 
 def perform_search(puzzle: pycross.Picross, cost_function=None, heuristic_function=None):
     """
@@ -151,28 +141,11 @@ def cost_mul_function(puzzle: pycross.Picross, move):
     return row_cost * column_cost
 
 
-def portion_of_possibles_heuristic(puzzle):
-    """
-    For the heuristic values, we look into how many of the possible
-    variants of a line/column can we complete right now.
-
-    The higher number of possibilities that remain, the farther
-    away we are from a potential solution?
-
-    Or would we potentially want to reward a more general answer?
-    like if we have a line of 3 and current state of ??1??, that's the best
-    option (guaranteed, actually), so that should qualify as some sort of
-    free action?
-
-    It's hard to say if we're actually doing filtering or some such at this point
-    """
-    pass
-
-
 if __name__ == '__main__':
     x = pycross.from_json(open("examples/5x5Monochrome/1.json").read())
 
     import time
+
     pre = time.perf_counter()
     y = perform_search(x, cost_mul_function)
     post = time.perf_counter()
