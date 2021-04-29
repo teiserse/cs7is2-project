@@ -9,7 +9,7 @@ class q_learning_agent():
         self.q_table = {}
 
         self.epsilon = 1
-        self.exploration_decay_rate = 1
+        self.exploration_decay_rate = 0.95
         self.learning_rate = 0.1
         self.discount = 0.99
         
@@ -135,18 +135,13 @@ class q_learning_agent():
         v1 = self.get_value(new_state)
         self.q_table[state, action] = self.q_table[state, action]*(1-self.learning_rate) + self.learning_rate*(reward + self.discount*v1)
 
-    def test(self, index, row=True):
-        result = self.picross.get_possible_actions(index, row)
-        return result
-
-if __name__ == '__main__':
-    num_episodes = 10000
+def solve(puzzle : pycross.Picross):
+    num_episodes = 1000
     max_step_per_episode = 100
     rewards_all_episodes = []
-    original_picross = pycross.from_json(open("pycross/examples/2.json").read())
+    original_picross = puzzle
     agent = q_learning_agent(copy.deepcopy(original_picross))
 
-    #Q-Learning Algo
     for episode in range(num_episodes):
         done = False
         rewards_current_episode = 0
@@ -167,4 +162,28 @@ if __name__ == '__main__':
                 break
         rewards_all_episodes.append(reward)
 
-    print(rewards_all_episodes)
+    agent.picross.puzzle = original_picross.puzzle.copy()
+    for step in range(max_step_per_episode):
+        if agent.is_explore():
+            action = agent.get_random_action()
+        else:
+            action = agent.get_action()
+        
+        new_state, reward, done = agent.step(action)
+        agent.update_qtable(action, new_state, reward)
+        agent.picross.puzzle = new_state.puzzle.copy()
+        rewards_current_episode += reward
+
+        if done:
+            break
+        rewards_all_episodes.append(reward)
+
+    return agent.picross.puzzle.copy()
+        
+
+if __name__ == '__main__':
+
+    #Q-Learning Algo
+    solve()
+
+    
