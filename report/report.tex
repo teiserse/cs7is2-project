@@ -93,31 +93,30 @@ The state space contains two methods of exiting the puzzle. The first method is 
 
 Q-learning with a q-table is meant to choose actions in such a way that the reward is maximised. The state space contains very few solutions. In most of the puzzles tested there was a unique correct solution, in some cases there might have been several solutions. That means that the correct solution space is extremely sparse while the incorrect solution space is quite vast. The contrast between correct solution space and incorrect solution space was reflected in the calculation of reward. Taking an action that did not complete the puzzle should always result in a reward of +1. If the an action taken results in a correct solution, a reward returned was +1000 and if the solution was incorrect, a reward of -100 was returned.
 
-The approach to exploration was a soft-max approach. The exploration rate \epsilon would be high very high to begin with because nothing is known about the reward, action and state space. A high \epsilon encourage the agent to choose random actions. A random number is generated between [0-1] and if epsilon is larger than the the random number, the agent picks a random action. If not, it picks the action with the highest q-value. Epsilon has a pre-defined decay rate. By the time the episode number reaches 100, the agent should be a hard-max solver, meaning the agent only picks the best q-value.
+The approach to exploration was a soft-max approach. The exploration rate would be high very high to begin with because nothing is known about the reward, action and state space. A high encourage the agent to choose random actions. A random number is generated between [0-1] and if epsilon is larger than the the random number, the agent picks a random action. If not, it picks the action with the highest q-value. Epsilon has a pre-defined decay rate. By the time the episode number reaches 100, the agent should be a hard-max solver, meaning the agent only picks the best q-value.
 
 The number of episodes will determine how many times the problem will be solved and as a result the q-table will be updated in a proportional amount since the q-table will be updated after every action. The pseudo-code for an episode is given below.
 
 \begin{algorithm}
-    \caption{Q-Learning Algorithm}\label{euclid}
-    \begin{algorithmic}[1]
-    	\For {$\textit{episode} in \textit{num_episodes}$}
-    		\State $\textit{agent.puzzle} = \textit{read_puzzle()}$
-    		\For {$\textit{step} in \textit{max_steps}$}
-    			\If {$agent.is_explore()$}
-    				\State $\textit{action = agent.get_random_action()}$
-    			\EndIf
-    			\Else
-    				\State $\textit{action = agent.get_action()}$
-    			\EndElse
-    			\State $\textit{new_state, reward, complete = agent.step(action)}$
-    			\State $\textit{agent.update_qtable(action, new_state, reward)}$
-    			\State $agent.puzzle = new_state.puzzle$
-    			\If{$complete$}
-    				break
-    			\EndIf
-    		\EndFor
-    	\EndFor
-    \end{algorithmic}
+	\caption{Q-Learning Algorithm}\label{euclid}
+	\begin{algorithmic}[1]
+		\For {$\textit{episode} \text{ in } \textit{num\_episodes}$}
+		\State $\textit{agent.puzzle} = \textit{read\_puzzle()}$
+		\For {$\textit{step} \text{in} \textit{max\_steps}$}
+		\If {$agent.is\_explore()$}
+		\State $\textit{action = agent.get\_random\_action()}$
+		\Else
+		\State $\textit{action = agent.get\_action()}$
+		\EndIf
+		\State $\textit{new\_state, reward, complete = agent.step(action)}$
+		\State $\textit{agent.update\_qtable(action, new\_state, reward)}$
+		\State $agent.puzzle = new\_state.puzzle$
+		\If{$complete$}
+		\State $\textit{break}$
+		\EndIf
+		\EndFor
+		\EndFor
+	\end{algorithmic}
 \end{algorithm}
 
 Updating the q-table is done the Bellman equation. This process is done by combined the old q-value with a learning rate, the reward, the discount rate and the max q-value in the future state. The equation is given below. Alpha is the learning rate and it determines how much influence the new q-value will have on the old one. The higher the learning rate, the more influence the future q-value will have.
@@ -148,7 +147,7 @@ The overall algorithm is shown below.
 
 \begin{algorithm}
     \caption{CSP Algorithm}\label{euclid}
-    \begin{algorithmic}[1]
+    \begin{algorithmic}[2]
         \State $\textit{stack} = \text{LIFO\_stack}$
         \State $\textit{all\_rows} = \text{generate\_all\_rows[row\_index]}$
         \State $\textit{viable\_rows} = \text{filter\_rows(all\_rows)}$
@@ -168,12 +167,37 @@ The overall algorithm is shown below.
 
 \subsection{Genetic Algorithms}
 The approach taken in this project follows the typical genetic algorithm design implementation. The programme reads the rules file which determines the constraints for each nonogram puzzle. 
+\begin{enumerate}
+\item Selection:
+the parents for the next generation are selected based on a metric known as fitness. In this implementation, fitness is a measure of how many of the constraints are left unsatisfied by a parent solution. The agents are sorted by those with the lowest number of unsatisfied constraints and these are more likely to be parents.
 
-Selection: the parents for the next generation are selected based on a metric known as fitness. In this implementation, fitness is a measure of how many of the constraints are left unsatisfied by a parent solution. The agents are sorted by those with the lowest number of unsatisfied constraints and these are more likely to be parents.
+\item Crossover:
+is the process of combining the characteristics of two parents to form a child. Using a probability function, a random split of each of two parents characteristics is taken and recombined into a new characteristic. This is undertaken for each pair of parents at the end of an iteration to create the new generation.
 
-Crossover: is the process of combining the characteristics of two parents to form a child. Using a probability function, a random split of each of two parents characteristics is taken and recombined into a new characteristic. This is undertaken for each pair of parents at the end of an iteration to create the new generation.
+\item Mutation: this is the process of randomly altering minor details in the characteristics of the new generation of agents. In this case it implies that a random block within the nonogram will be flipped from filled to unfilled.
+\end{enumerate}
+The programme terminates in either one of two ways. At the end of each iteration of agents, the solution is checked against that reached by the algorithm and terminates if the solution is reached. However, the programme is still liable to make no progression beyond local optima. To mitigate this, the algorithm is terminated and reinitialised with random values after 1000 iterations.
 
-Mutation: this is the process of randomly altering minor details in the characteristics of the new generation of agents. In this case it implies that a random block within the nonogram will be flipped from filled to unfilled.
+The overall algorithm is shown below.
+
+\begin{algorithm}
+	\caption{Pseudo-code for Genetic Algorithm}
+	\label{fig:garun}
+	\begin{algorithmic}
+		\State $population \gets GenerateInitialPopulation(desiredPopulationSize)$
+		\State $population \gets assignFitnessToEachMember(population)$
+		\While{$run-time < allowedTime$}
+		\State $newGeneration \gets selectMembersOfPopForCrossover(population)$
+		\State $newGeneration \gets mutatePopulation(newGeneration)$
+		\State $population \gets assignFitnessToEachMember(population)$
+		\If{$highestFitnessInPopulation(population) >= fitnessRequired$}
+		\State \Return $fittestMemeberOfPopulation(population)$
+		\EndIf
+		\EndWhile
+		\State \Return $fittestMemeberOfPopulation(population)$
+		
+	\end{algorithmic}
+\end{algorithm}
 
 \section{Experimental Results}
 	This section should provide the details of the evaluation. Specifically:
