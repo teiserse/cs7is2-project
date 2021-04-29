@@ -5,8 +5,6 @@ import backtrack, pycross
 class GridFrame(wx.Frame, object):
     def __init__(self, parent):
         wx.Frame.__init__(self, parent)
-
-        # Create a wxGrid object
         self.grid = wx.grid.Grid(self, -1)
         self.grid.CreateGrid(10, 10)
 
