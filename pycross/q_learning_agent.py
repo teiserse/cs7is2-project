@@ -161,22 +161,25 @@ def solve(puzzle : pycross.Picross):
             if done:
                 break
         rewards_all_episodes.append(reward)
+    
+    while True:
+        agent.picross.puzzle = original_picross.puzzle.copy()
+        for step in range(max_step_per_episode):
+            if agent.is_explore():
+                action = agent.get_random_action()
+            else:
+                action = agent.get_action()
+            
+            new_state, reward, done = agent.step(action)
+            agent.update_qtable(action, new_state, reward)
+            agent.picross.puzzle = new_state.puzzle.copy()
+            rewards_current_episode += reward
 
-    agent.picross.puzzle = original_picross.puzzle.copy()
-    for step in range(max_step_per_episode):
-        if agent.is_explore():
-            action = agent.get_random_action()
-        else:
-            action = agent.get_action()
-        
-        new_state, reward, done = agent.step(action)
-        agent.update_qtable(action, new_state, reward)
-        agent.picross.puzzle = new_state.puzzle.copy()
-        rewards_current_episode += reward
-
-        if done:
+            if done:
+                break
+            rewards_all_episodes.append(reward)
+        if reward == 1000:
             break
-        rewards_all_episodes.append(reward)
 
     return agent.picross.puzzle.copy()
         
