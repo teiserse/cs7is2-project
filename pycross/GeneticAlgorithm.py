@@ -370,8 +370,8 @@ def solve_from_picross(puzzle : pycross.Picross):
     row_rules = [[rule[1] for rule in row] for row in puzzle.rows]
     column_rules = [[rule[1] for rule in column] for column in puzzle.columns]
     contraints = Contraints(lines=row_rules, columns=column_rules)
-    nLines = puzzle.width
-    nColumns = puzzle.height
+    nLines = puzzle.height
+    nColumns = puzzle.width
     populationSize = 200
 
     puzzleContraints = contraints, nLines, nColumns, nLines * nColumns, populationSize
