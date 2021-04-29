@@ -83,9 +83,7 @@ A-star is an example of a heuristic algorithm that is commonly used in pathfindi
 
 The Backtracking Heuristic (BH) methodology is a combination of a heuristic approach, which applies a mathematical programming model, and a backtrack search algorithm in order to determine the best heuristics and an optimal ordering between them\cite{BH}.
 
-Backtracking Search for CSP: Some hobbyists have created programs that solve Sudoku puzzles using a backtracking algorithm.
-Backtracking is a variant depth-first search, which investigates one branch to a potential solution before going on to another.
-A brute force algorithm visits the empty cells in some order, filling in digits sequentially, or backtracking when the number is found to be not valid\cite{Peter,lecture}.
+Backtracking Search for Constraint Satisfaction Problems (CSP): Backtracking is a variant of depth-first search. The difference lies in an extra step backtracking applies. Each time the algorithm traverses a node (state in our case), the state of the puzzle is checked. If a constraint is broken, then the algorithm will backtrack to the puzzle's previous state and explore the next branch, rather than continuing down the branch that will not yield a solution.
 
 Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints could be presented as an image, and hence Mehta chose the algorithm used for Sudoku to be Deep Q-Learning. The Q agent is trained with no rules of the game, with only the reward corresponding to each state's action. This paper\cite{Qlearning} contributes to choosing the reward structure, state representation, and formulation of the deep neural network.
 
