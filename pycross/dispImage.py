@@ -8,22 +8,18 @@ class GridFrame(wx.Frame, object):
 
         # Create a wxGrid object
         self.grid = wx.grid.Grid(self, -1)
-
-        # Then we call CreateGrid to set the dimensions of the grid
-        # (100 rows and 10 columns in this example)
         self.grid.CreateGrid(10, 10)
 
         for row in range(10):
             self.grid.SetRowSize(row, 30)
             self.grid.SetColSize(row, 30)
 
-    def setWhite(self,puzzle):
+    def set_white(self,puzzle):
         for r in range(puzzle.height):
             for c in range(puzzle.width):
                 self.grid.SetCellBackgroundColour(r,c,wx.WHITE)
 
-
-    def setColour(self,puzzle):
+    def set_colour(self,puzzle):
         colours = []
         for item in puzzle.colours:
             colours.append(puzzle.colours[item])
@@ -38,8 +34,8 @@ if __name__ == '__main__':
     cs = backtrack.constraint_search(puzzle)
     app = wx.App(0)
     frame = GridFrame(None)
-    frame.setWhite(cs)
-    frame.setColour(cs)
+    frame.set_white(cs)
+    frame.set_colour(cs)
     wx.Window.SetSize(frame,wx.DefaultCoord,wx.DefaultCoord,400,400)
     frame.Show()
     app.MainLoop()
