@@ -30,9 +30,15 @@ Research in Artificial Intelligence has always had a very strong relationship wi
 
 
 \section{Introduction}
-Artificial intelligence (AI) is the emulation of human intelligence of computers that are designed to think and behave like humans. As AI has evolved to have a huge global influence, it operates by integrating vast volumes of data with quick, iterative analysis and intelligent algorithms, which enables the program to learn automatically from patterns or features in the data.
+Artificial intelligence (AI), in our scope, is the application of computing to solve non-trivial problems and analyse complex, real-world, situations.
+AI has been extensively researched and applied to many situations at this point in time. However, the basis of testing many AI approaches remains in the application of AI to well defined games, such as chess, and logic puzzles such as Sudoku or, in our case, Picross.
 
-Picross, also known as Nonograms, is a logic puzzle in which the player uses provided rules to mark (or omit from marking) cells in a grid. Typically, the rules are given as lists of numbers at the sides of the grid (see Figure 1). As these puzzles (typically) have only one solution, the best method to solve them is determined by the speed of the solution. However, playing games like a human is other than thinking about games like a human or learning like one. There is a famous saying that game-playing is the Drosophila of AI. And yet in our research it could be that the task of playing picross, once it’s converted into the task of searching some certain nodes evaluated by time consumed, it is also a different kind of intelligence.
+Picross, also known as Nonograms, is a logic puzzle in which the player uses provided rules to mark (or omit from marking) cells in a grid.
+The rules are given as a ordered list of numbers, each referring to a contiguous sequence of filled cells in the grid.
+The puzzles come in two formats, monochrome and multicoloured.
+Cell sequences must be separated, either by a space in same-colour sequences, or a break by a sequence of a differing colour.
+Typically, the rules are given as lists of numbers at the sides of the grid (see Figure 1). As these puzzles (typically) have only one solution, the best method to solve them is determined by the speed of the solution.
+We decided on looking at picross puzzles due to their relative novelty, and we were also attracted by the goal of solving a puzzle being to produce an image - a quality that Sudoku cannot compete with.
 
 \begin{figure}[h]
   \centering
@@ -40,9 +46,14 @@ Picross, also known as Nonograms, is a logic puzzle in which the player uses pro
   \caption{An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled. Black cells mark filled cells and blank cells mark unfilled cells. Example from \texttt{https://en.wikipedia.org/wiki/Nonogram}, sourced 2021-04-28.}
 \end{figure}
 
-Our goal is to analyse the solving of picross puzzles, and determine which is the best among the 4 approaches we are examining. These types of results can be used for picross design feedback, content generation, or difficulty estimation. One potential use is in order for humans to use these computer-generated strategies, the strategies must be both efficient in the domain of interest and concisely articulated so that a designer can consider the whole strategy in their head. For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
+Our goal is to analyse the solving of picross puzzles, and determine which is the best among the 4 approaches we are examining. These types of results can be used for picross design feedback, content generation, or difficulty estimation.
+One potential use is to act as an automated difficulty grading system to be used by picross puzzle designers. Depending on the approach and the time taken to solve the puzzle by a given algorithm, a puzzle curation system can sort puzzles in terms of their difficulty.
+For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
 
-This paper presents a comparison of 4 different AI algorithms - uniform cost search, Q-learning, CSP and GA - that we  have decided to apply to solving picross puzzles. The paper also evaluates these algorithms based on their execution time, memory usage and other metrics. Through the process of implementation and evaluation we show the pros and cons of each algorithm, and we also examine their common aspects and differences, connections between methods, drawbacks and open problems. Our recording of presentation link of this research is xxx.
+This paper presents a comparison of 4 different AI algorithms - uniform cost search, Q-learning, CSP and GA - that we  have decided to apply to solving picross puzzles.
+The paper also evaluates these algorithms based on their execution time, memory usage and other metrics.
+Through the process of implementation and evaluation we show the pros and cons of each algorithm, and we also examine their common aspects and differences, connections between methods, drawbacks and open problems.
+Our recording of presentation link of this research is xxx.
 
 
 \section{Related Work}
@@ -68,19 +79,26 @@ This section formalises the problem you are addressing and the models used to so
 \subsection{Uniform Cost Search}
 We have implemented an uniform cost search solution to solve picross puzzles - while this is an established search algorithm, this requires our problem to be represented as a searchable graph.
 
-We did this by modelling the puzzle as a graph - The start state is an empty puzzle, and the next states are potential moves of filling in a square as a particular colour, out of all unfilled squares (our only factor of filtering is if a row/column combination allows for a colour). The cost function we have implemented is looking at the row/column of the square in question, and calculating:
+We did this by modelling the puzzle as a graph - The start state is an empty puzzle, and the next states are potential moves of filling in a square as a particular colour, out of all unfilled squares (our only factor of filtering is if a row/column combination allows for a colour).
+The cost function we have implemented is looking at the row/column of the square in question, and calculating:
 
 $$ (1 - row_{proportion}) * (1 - column_{propotion}) $$
 
-where $row/column_{proportion}$ is the number of squares of that colour in that row/column divided by the height/width of the puzzle. As such, in the intersection of a full row/column pair, the action cost is zero, of a nearly full pair close to zero and for a sparse pair approaching one. This gives us a cost function which makes cheaper locations that will be more likely to contain a square of that colour.
+where $row/column_{proportion}$ is the number of squares of that colour in that row/column divided by the height/width of the puzzle.
+As such, in the intersection of a full row/column pair, the action cost is zero, of a nearly full pair close to zero and for a sparse pair approaching one.
+This gives us a cost function which makes cheaper locations that will be more likely to contain a square of that colour.
 
-While the original plan was to add onto this a heuristic in order to implement a-star search, we could not come up with a sensible way to derive a heuristic from the state of the puzzle - either we would produce a calculation that would most likely not correspond to a useful way to estimate the "completeness" of a puzzle, or we would effectively be encoding another method like constraint programming within the heuristic itself (making the surrounding search implementation redundant).
+While the original plan was to add onto this a heuristic in order to implement a-star search, we could not come up with a sensible way to derive a heuristic from the state of the puzzle.
+We would either produce a calculation that would most likely not correspond to a useful way to estimate the "completeness" of a puzzle, or we would effectively be encoding another method like constraint programming within the heuristic itself (making the surrounding search implementation redundant).
 
-Due to the nature of the puzzle, using search is expected to be the worst performing method, and is mainly created as an example. Since the puzzle can have an inordinate number of states, and there is a massive expansion of state transitions at each state, using a search approach immediately hits major speed and memory limits.
+Due to the nature of the puzzle, using search is expected to be the worst performing method, and is mainly created as an example.
+Since the puzzle can have an inordinate number of states, and there is a massive expansion of state transitions at each state, using a search approach immediately hits major speed and memory limits.
 
-For example, taking a monochrome 5x5 puzzle, we have $2^{25}$ total possible states, and most states have a numerous amount of state transitions - 25 from the initial state, 24 from \textit{each} state following those, and so on. As such, the frontier of the search grows at a very rapid pace - this both makes each state take additional computing time, and quickly fills up the physical limits of available memory on most computers.
+For example, taking a monochrome 5x5 puzzle, we have $2^{25}$ total possible states, and most states have a numerous amount of state transitions - 25 from the initial state, 24 from \textit{each} state following those, and so on.
+As such, the frontier of the search grows at a very rapid pace - this both makes each state take additional computing time, and quickly fills up the physical limits of available memory on most computers.
 
-Some reduction occurs from the fact that the cost and result of two paths leading to the same state are regardless of order, allowing us to collapse in duplicate entries. However, this does not nearly reduce the load of the approach to a state where is it comparable to other methods that actively check against the puzzle's rules and full current state in a sensible manner.
+Some reduction occurs from the fact that the cost and result of two paths leading to the same state are regardless of order, allowing us to collapse in duplicate entries.
+However, this does not nearly reduce the load of the approach to a state where is it comparable to other methods that actively check against the puzzle's rules and full current state in a sensible manner.
 
 \subsection{Q-Learning}
 First the state space and the actions space had to be defined for the problem in order to create a Q-learning agent.
