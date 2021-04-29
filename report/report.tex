@@ -32,17 +32,17 @@ Research in Artificial Intelligence has always had a very strong relationship wi
 \section{Introduction}
 Artificial intelligence (AI) is the emulation of human intelligence of computers that are designed to think and behave like humans. As AI has evolved to have a huge global influence, it operates by integrating vast volumes of data with quick, iterative analysis and intelligent algorithms, which enables the program to learn automatically from patterns or features in the data.
 
-Picross, also known as Nonograms, is a wonderful series of games in which players use logic to solve puzzles that the cells in a grid must be marked or just left clear constrained by the numbers at the side of the grid(as Figure 1 shows). The least time to solve the puzzles is the key to win. However, playing games like a human is other than thinking about games like a human or learning like one. There is a famous saying that game-playing is the Drosophila of AI. And yet in our research it could be that the task of playing picross, once it’s converted into the task of searching some certain nodes evaluated by time consumed, it is also a different kind of intelligence.
+Picross, also known as Nonograms, is a logic puzzle in which the player uses provided rules to mark (or omit from marking) cells in a grid. Typically, the rules are given as lists of numbers at the sides of the grid (see Figure 1). As these puzzles (typically) have only one solution, the best method to solve them is determined by the speed of the solution. However, playing games like a human is other than thinking about games like a human or learning like one. There is a famous saying that game-playing is the Drosophila of AI. And yet in our research it could be that the task of playing picross, once it’s converted into the task of searching some certain nodes evaluated by time consumed, it is also a different kind of intelligence.
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.6\textwidth]{picross1.png}
-  \caption{An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled with true. We mark black cells are true and cells left blank are false.}
+  \caption{An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled. Black cells mark filled cells and blank cells mark unfilled cells. Example from \texttt{https://en.wikipedia.org/wiki/Nonogram}, sourced 2021-04-28.}
 \end{figure}
 
-Our motivation is no more than analyzing the problem of picross and deduce what the best strategy among the 4 mentioned AI algorithms, which can be used to picross design feedback, content generation, or difficulty estimation. One potential use is in order for humans to use these computer-generated strategies, the strategies must be both efficient in the domain of interest and concisely articulated so that a designer can consider the whole strategy in their head. For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
+Our goal is to analyse the solving of picross puzzles, and determine which is the best among the 4 approaches we are examining. These types of results can be used for picross design feedback, content generation, or difficulty estimation. One potential use is in order for humans to use these computer-generated strategies, the strategies must be both efficient in the domain of interest and concisely articulated so that a designer can consider the whole strategy in their head. For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
 
-This paper presents a comparison of 4 different AI algorithms including uniform cost search, Q-learning, CSP and GA that have been used to solve the picross puzzles. The paper also evaluates these algorithms based on their execution time, memoty usage and so on. And through the process of implementation and evaluation we prove the state-of-the-art of all these algorithms and we also find out their common aspects and differences, connections between methods, drawbacks and open problems. Our recording of presentation link of this research is xxx.
+This paper presents a comparison of 4 different AI algorithms - uniform cost search, Q-learning, CSP and GA - that we  have decided to apply to solving picross puzzles. The paper also evaluates these algorithms based on their execution time, memory usage and other metrics. Through the process of implementation and evaluation we show the pros and cons of each algorithm, and we also examine their common aspects and differences, connections between methods, drawbacks and open problems. Our recording of presentation link of this research is xxx.
 
 
 \section{Related Work}
@@ -58,7 +58,7 @@ Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints c
 
 Genetic algorithms have found much use in puzzle-based problem solving. According to \cite{geneticAlgo}, genetic algorithms are well suited for multi-objective optimisation problems, such as sudoku puzzles. Search algorithms are a commonly deployed in games to find an optimal solution to a problem with many path options. A problem encountered by search algorithms is the high time and space complexities required when the search domain becomes exceedingly large. Genetic algorithms are a way of mitigating this downside of search algorithms with respect to solution searching, and have been demonstrated as effective in solving other constraint based puzzles such as sudoku.
 
-A genetic algorithm is a stochastic optimization algorithm. It takes inspiration from biological ideas such as the theory of evolution put forth by Charles Darwin. In this theory, genetic characteristics are passed down through successive generations following successful reproduction. Successful production of offspring is dependent on many factors, including the suitability of the parents to the local environment. When applied to optimisation algorithms, parents may be thought of as an instance of an agent attempting to reach a goal. A generation is a population of these instances with slight differences between their characteristic parameters. Following each iteration of the agents attempting to reach a goal state, the agents with the best progress are given a higher probability of producing offspring. The next generation is produced as a function of this probability. Thus, each cohort of agents is a slight modification of the previous population, weighted towards the most successful members of the previous generation. Over many iterations, the population should become optimized to the environment, thus having more success in reaching the goal state. 
+A genetic algorithm is a stochastic optimization algorithm. It takes inspiration from biological ideas such as the theory of evolution put forth by Charles Darwin. In this theory, genetic characteristics are passed down through successive generations following successful reproduction. Successful production of offspring is dependent on many factors, including the suitability of the parents to the local environment. When applied to optimisation algorithms, parents may be thought of as an instance of an agent attempting to reach a goal. A generation is a population of these instances with slight differences between their characteristic parameters. Following each iteration of the agents attempting to reach a goal state, the agents with the best progress are given a higher probability of producing offspring. The next generation is produced as a function of this probability. Thus, each cohort of agents is a slight modification of the previous population, weighted towards the most successful members of the previous generation. Over many iterations, the population should become optimized to the environment, thus having more success in reaching the goal state.
 
 
 
@@ -83,7 +83,7 @@ For example, taking a monochrome 5x5 puzzle, we have $2^{25}$ total possible sta
 Some reduction occurs from the fact that the cost and result of two paths leading to the same state are regardless of order, allowing us to collapse in duplicate entries. However, this does not nearly reduce the load of the approach to a state where is it comparable to other methods that actively check against the puzzle's rules and full current state in a sensible manner.
 
 \subsection{Q-Learning}
-First the state space and the actions space had to be defined for the problem in order to create a Q-learning agent. 
+First the state space and the actions space had to be defined for the problem in order to create a Q-learning agent.
 
 The state of a given puzzle was defined as the the rows that were filled in by the Q-leaning agent. If there were different permutation chosen for a given row of a given puzzle, the state of the puzzle would be different.
 
@@ -122,7 +122,7 @@ The number of episodes will determine how many times the problem will be solved 
 Updating the q-table is done the Bellman equation. This process is done by combined the old q-value with a learning rate, the reward, the discount rate and the max q-value in the future state. The equation is given below. Alpha is the learning rate and it determines how much influence the new q-value will have on the old one. The higher the learning rate, the more influence the future q-value will have.
 
 \begin{equation}
-	NewQ(s, a) = (1 - \alpha)Q(s,a) + \alpha[R(s,a) + \gamma maxQ'(s', a') - Q(s,a)] 
+	NewQ(s, a) = (1 - \alpha)Q(s,a) + \alpha[R(s,a) + \gamma maxQ'(s', a') - Q(s,a)]
 \end{equation}
 
 \subsection{Constraint Programming}
@@ -166,7 +166,7 @@ The overall algorithm is shown below.
 \end{algorithm}
 
 \subsection{Genetic Algorithms}
-The approach taken in this project follows the typical genetic algorithm design implementation. The programme reads the rules file which determines the constraints for each nonogram puzzle. 
+The approach taken in this project follows the typical genetic algorithm design implementation. The programme reads the rules file which determines the constraints for each nonogram puzzle.
 \begin{enumerate}
 \item Selection:
 the parents for the next generation are selected based on a metric known as fitness. In this implementation, fitness is a measure of how many of the constraints are left unsatisfied by a parent solution. The agents are sorted by those with the lowest number of unsatisfied constraints and these are more likely to be parents.
@@ -195,7 +195,7 @@ The overall algorithm is shown below.
 		\EndIf
 		\EndWhile
 		\State \Return $fittestMemeberOfPopulation(population)$
-		
+
 	\end{algorithmic}
 \end{algorithm}
 
