@@ -99,7 +99,8 @@ A problem encountered by search algorithms is the high time and space complexiti
 Genetic algorithms are a way of mitigating this downside of search algorithms with respect to solution searching, and have been demonstrated as effective in solving other constraint based puzzles such as sudoku.
 
 \section{Problem Definition and Algorithm}
-This section formalises the problem you are addressing and the models used to solve it. This section should provide a technical discussion of the chosen/implemented algorithms. A pseudocode description of the algorithm(s) can also be beneficial to a clear explanation. It is also possible to provide one example that clarifies the way an algorithm works. It is important to highlight in this section the possible parameters involved in the model and their impact, as well as all the implementation choices that can impact the algorithm.
+We looked at four algorithms in total - search (specifically, Uniform Cost Search), Q-Learning, Constraint Satisfaction and Genetic Algorithms.
+We decided on search as an example of an unsuitable approach, Q-Learning \todo[inline]{ask andrej}, constraint satisfaction because of the natural mapping between the puzzle to the approach, and Genetic Algorithms, due to the dissimilarity of the approach from the other ones we were attempting.
 
 \subsection{Uniform Cost Search}
 We have implemented an uniform cost search solution to solve picross puzzles - while this is an established search algorithm, this requires our problem to be represented as a searchable graph.
