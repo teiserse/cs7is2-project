@@ -83,7 +83,48 @@ For example, taking a monochrome 5x5 puzzle, we have $2^{25}$ total possible sta
 Some reduction occurs from the fact that the cost and result of two paths leading to the same state are regardless of order, allowing us to collapse in duplicate entries. However, this does not nearly reduce the load of the approach to a state where is it comparable to other methods that actively check against the puzzle's rules and full current state in a sensible manner.
 
 \subsection{Q-Learning}
-q-learning text goes here
+First the state space and the actions space had to be defined for the problem in order to create a Q-learning agent. 
+
+The state of a given puzzle was defined as the the rows that were filled in by the Q-leaning agent. If there were different permutation chosen for a given row of a given puzzle, the state of the puzzle would be different.
+
+The action space for a given puzzle would be defined by getting the permutations of the row that are left to be filled in. Choosing a row to fill would be considered an action that would consequently move the agent to a different state. If an action is chosen for a row it is not possible to reverse that action. The row would be filled if an action was taken and as a result, there would not be any actions available for that row.
+
+The state space contains two methods of exiting the puzzle. The first method is to fill in all rows the to not have any more actions to take. If there are no more actions to take, the algorithm checks whether the solution to the puzzle is correct. If the answer to the puzzle is correct, the reward returned is 1000. If the completed puzzle is incorrect, the reward returned is -100.
+
+Q-learning with a q-table is meant to choose actions in such a way that the reward is maximised. The state space contains very few solutions. In most of the puzzles tested there was a unique correct solution, in some cases there might have been several solutions. That means that the correct solution space is extremely sparse while the incorrect solution space is quite vast. The contrast between correct solution space and incorrect solution space was reflected in the calculation of reward. Taking an action that did not complete the puzzle should always result in a reward of +1. If the an action taken results in a correct solution, a reward returned was +1000 and if the solution was incorrect, a reward of -100 was returned.
+
+The approach to exploration was a soft-max approach. The exploration rate \epsilon would be high very high to begin with because nothing is known about the reward, action and state space. A high \epsilon encourage the agent to choose random actions. A random number is generated between [0-1] and if epsilon is larger than the the random number, the agent picks a random action. If not, it picks the action with the highest q-value. Epsilon has a pre-defined decay rate. By the time the episode number reaches 100, the agent should be a hard-max solver, meaning the agent only picks the best q-value.
+
+The number of episodes will determine how many times the problem will be solved and as a result the q-table will be updated in a proportional amount since the q-table will be updated after every action. The pseudo-code for an episode is given below.
+
+\begin{algorithm}
+    \caption{Q-Learning Algorithm}\label{euclid}
+    \begin{algorithmic}[1]
+    	\For {$\textit{episode} in \textit{num_episodes}$}
+    		\State $\textit{agent.puzzle} = \textit{read_puzzle()}$
+    		\For {$\textit{step} in \textit{max_steps}$}
+    			\If {$agent.is_explore()$}
+    				\State $\textit{action = agent.get_random_action()}$
+    			\EndIf
+    			\Else
+    				\State $\textit{action = agent.get_action()}$
+    			\EndElse
+    			\State $\textit{new_state, reward, complete = agent.step(action)}$
+    			\State $\textit{agent.update_qtable(action, new_state, reward)}$
+    			\State $agent.puzzle = new_state.puzzle$
+    			\If{$complete$}
+    				break
+    			\EndIf
+    		\EndFor
+    	\EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Updating the q-table is done the Bellman equation. This process is done by combined the old q-value with a learning rate, the reward, the discount rate and the max q-value in the future state. The equation is given below. Alpha is the learning rate and it determines how much influence the new q-value will have on the old one. The higher the learning rate, the more influence the future q-value will have.
+
+\begin{equation}
+	NewQ(s, a) = (1 - \alpha)Q(s,a) + \alpha[R(s,a) + \gamma maxQ'(s', a') - Q(s,a)] 
+\end{equation}
 
 \subsection{Constraint Programming}
 The basis of the constraint programming algorithm applied was backtracking, with constraint propagation. Depth first search was used as the backend to apply backtracking. The algorithm starts off with an empty puzzle. All permutations of the first row are generated and filtered. The filtering process here refers to  constraint propagation. Constraint propagation is applied as follows:

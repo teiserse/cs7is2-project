@@ -9,7 +9,7 @@ class q_learning_agent():
         self.q_table = {}
 
         self.epsilon = 1
-        self.exploration_decay_rate = 0.98
+        self.exploration_decay_rate = 1
         self.learning_rate = 0.1
         self.discount = 0.99
         
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     num_episodes = 10000
     max_step_per_episode = 100
     rewards_all_episodes = []
-    original_picross = pycross.from_json(open("pycross/examples/1.json").read())
+    original_picross = pycross.from_json(open("pycross/examples/2.json").read())
     agent = q_learning_agent(copy.deepcopy(original_picross))
 
     #Q-Learning Algo
