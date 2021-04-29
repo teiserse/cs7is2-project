@@ -359,6 +359,49 @@ def fitness(sol, puzzleContraints):
 
     return count
 
+import pycross
+
+def solve_from_picross(puzzle : pycross.Picross):
+
+    # contraints = readContraintsFile('examples/' + puzzleName + '.txt')
+    # puzzleContraints = createPuzzleContraints(contraints, populationSize)
+    # contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+
+    row_rules = [[rule[1] for rule in row] for row in puzzle.rows]
+    column_rules = [[rule[1] for rule in column] for column in puzzle.columns]
+    contraints = Contraints(lines=row_rules, columns=column_rules)
+    nLines = puzzle.width
+    nColumns = puzzle.height
+    populationSize = 200
+
+    puzzleContraints = contraints, nLines, nColumns, nLines * nColumns, populationSize
+
+    pre = time.perf_counter()
+    solution = geneticAlgo(puzzleContraints)
+    print(checkSolution(Game(nLines, nColumns, solution.points), contraints))
+    print(Game(nLines, nColumns, solution.points))
+    print(solution.points)
+    post = time.perf_counter()
+    print("Time: ", post - pre)
+
+    def split_to_lines(gen_list, width):
+        for i in range(0, len(gen_list), width):
+            yield gen_list[i:i + width]
+
+    def map_to_colour(marked):
+        if marked:
+            return list(puzzle.colours.keys())[0]
+        else:
+            return 0
+
+    row = 0
+    for line in split_to_lines(solution.points, puzzle.width):
+        puzzle[row] = [map_to_colour(x) for x in line]
+        row += 1
+
+    return puzzle
+
+
 if __name__ == '__main__':
     
     main()
