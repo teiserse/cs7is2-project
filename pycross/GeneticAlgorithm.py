@@ -51,8 +51,8 @@ def geneticAlgo(puzzleContraints):
         RandomAgents   = select(RandomAgents, MutatedChildren, puzzleContraints)
         iterations += 1
 
-        print("Iteration count: ", iterations)
-        print("Contraints unmet: ", abs(RandomAgents[0].fitness))
+        # print("Iteration count: ", iterations)
+        # print("Contraints unmet: ", abs(RandomAgents[0].fitness))
         if(iterations > 1000):
             break
     return finalIter(RandomAgents, puzzleContraints)
@@ -62,7 +62,7 @@ def randomInit(puzzleContraints):
 
     S = []
 
-    print()
+    # print()
     for _ in range(populationSize):
         s = []
         for _ in range(nPoints):
@@ -378,11 +378,11 @@ def solve_from_picross(puzzle : pycross.Picross):
 
     pre = time.perf_counter()
     solution = geneticAlgo(puzzleContraints)
-    print(checkSolution(Game(nLines, nColumns, solution.points), contraints))
-    print(Game(nLines, nColumns, solution.points))
-    print(solution.points)
+    # print(checkSolution(Game(nLines, nColumns, solution.points), contraints))
+    # print(Game(nLines, nColumns, solution.points))
+    # print(solution.points)
     post = time.perf_counter()
-    print("Time: ", post - pre)
+    # print("Time: ", post - pre)
 
     def split_to_lines(gen_list, width):
         for i in range(0, len(gen_list), width):

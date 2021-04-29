@@ -12,6 +12,7 @@ import pycross
 import search
 import backtrack
 import q_learning_agent
+import GeneticAlgorithm
 
 TIMEOUT = 180  # The time in seconds after which a test is terminated.
 
@@ -29,10 +30,11 @@ if __name__ == '__main__':
     res_queue = Queue()
 
     parser = argparse.ArgumentParser(description="Run test cases on the algorithms made for the project.")
-    parser.add_argument('-a', '--algorithm', choices=["search", "csp", "q-learning"], required=True, help="which algorithm(s) to run")
+    parser.add_argument('-a', '--algorithm', choices=["search", "csp", "q-learning", "genetic"], required=True,
+                        help="which algorithm(s) to run")
     parser.add_argument('-t', '--testcase', required=True, help="which testcase(s) to run")
     parser.add_argument('-l', '--log', default=False, action="store_true", help="output test results to log file")
-    parser.add_argument('-c', '--compact', default=True, action="store_true",
+    parser.add_argument('-c', '--compact', default=False, action="store_true",
                         help="reduce size of log, not print puzzle")
 
     args = parser.parse_args()
@@ -44,6 +46,8 @@ if __name__ == '__main__':
         test_function = backtrack.constraint_search
     if args.algorithm == "q-learning":
         test_function = q_learning_agent.solve
+    if args.algorithm == "genetic":
+        test_function = GeneticAlgorithm.solve_from_picross
 
     print(f"Selected algorithm: {args.algorithm}")
 
@@ -105,18 +109,32 @@ if __name__ == '__main__':
                             print("", file=logfile)
                 else:
                     solve_time, result = res_queue.get()
-                    if args.compact:
-                        print(f"{case} - Solved after {solve_time:.4f} seconds.")
-                        if args.log:
-                            print(f"{case} - Solved after {solve_time:.4f} seconds.", file=logfile)
+                    if not result.is_complete():
+                        if args.compact:
+                            print(f"{case} - Returned incomplete after {solve_time:.4f} seconds.")
+                            if args.log:
+                                print(f"{case} - Returned incomplete after {solve_time:.4f} seconds.", file=logfile)
+                        else:
+                            print(f"Returned incomplete - {solve_time:.4f} seconds.")
+                            print("Puzzle:")
+                            print(result)
+                            if args.log:
+                                print(f"Returned incomplete - {solve_time:.4f} seconds.", file=logfile)
+                                print("Puzzle:", file=logfile)
+                                print(result, file=logfile)
                     else:
-                        print(f"Solved - {solve_time:.4f} seconds.")
-                        print("Puzzle:")
-                        print(result)
-                        if args.log:
-                            print(f"Solved - {solve_time:.4f} seconds.", file=logfile)
-                            print("Puzzle:", file=logfile)
-                            print(result, file=logfile)
+                        if args.compact:
+                            print(f"{case} - Solved after {solve_time:.4f} seconds.")
+                            if args.log:
+                                print(f"{case} - Solved after {solve_time:.4f} seconds.", file=logfile)
+                        else:
+                            print(f"Solved - {solve_time:.4f} seconds.")
+                            print("Puzzle:")
+                            print(result)
+                            if args.log:
+                                print(f"Solved - {solve_time:.4f} seconds.", file=logfile)
+                                print("Puzzle:", file=logfile)
+                                print(result, file=logfile)
 
     if logfile is not None:
         logfile.close()
