@@ -11,6 +11,7 @@ from multiprocessing import Process, Queue
 import pycross
 import search
 import backtrack
+import q_learning_agent
 
 TIMEOUT = 180  # The time in seconds after which a test is terminated.
 
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     res_queue = Queue()
 
     parser = argparse.ArgumentParser(description="Run test cases on the algorithms made for the project.")
-    parser.add_argument('-a', '--algorithm', choices=["search", "csp"], required=True, help="which algorithm(s) to run")
+    parser.add_argument('-a', '--algorithm', choices=["search", "csp", "q-learning"], required=True, help="which algorithm(s) to run")
     parser.add_argument('-t', '--testcase', required=True, help="which testcase(s) to run")
     parser.add_argument('-l', '--log', default=False, action="store_true", help="output test results to log file")
     parser.add_argument('-c', '--compact', default=True, action="store_true",
@@ -41,6 +42,8 @@ if __name__ == '__main__':
     test_function = functools.partial(search.perform_search, cost_function=search.cost_mul_function)
     if args.algorithm == "csp":
         test_function = backtrack.constraint_search
+    if args.algorithm == "q-learning":
+        test_function = q_learning_agent.solve
 
     print(f"Selected algorithm: {args.algorithm}")
 
