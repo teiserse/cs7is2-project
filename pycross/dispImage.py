@@ -8,9 +8,6 @@ class GridFrame(wx.Frame, object):
 
         # Create a wxGrid object
         self.grid = wx.grid.Grid(self, -1)
-
-        # Then we call CreateGrid to set the dimensions of the grid
-        # (100 rows and 10 columns in this example)
         self.grid.CreateGrid(10, 10)
 
         for row in range(10):
