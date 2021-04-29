@@ -1,15 +1,24 @@
 % !BIB TS-program =
 \documentclass{svproc}
 \usepackage{url}
+\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+\usepackage{todonotes}
 \def\UrlFont{\rmfamily}
 \tolerance=1
 \emergencystretch=\maxdimen
 \hyphenpenalty=10000
 \hbadness=10000
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=magenta,
+  urlcolor=cyan,
+  citecolor=black,
+}
 
 \begin{document}
 \mainmatter
@@ -25,65 +34,100 @@
 
 \begin{abstract}
 Research in Artificial Intelligence has always had a very strong relationship with games and game-playing. Picross (a.k.a nonograms) are logic puzzles with simple rules and challenging solutions, and in this case our research provides a survey that analyses and compares different AI algorithms - uniform cost search, Q-learning, constraint satisfaction problems (CSPs) and genetic algorithms (GA) applied to solve picross puzzles. Through the process of implementation and evaluation we analyse there algorithms and find out their common aspects, differences, connections between methods, drawbacks and open problems.
-\keywords{artificial intelligence, uniform cost search, Q-learning, CSPs, Genetic Algorithms}
+\keywords{artificial intelligence, uniform cost search, Q-learning, constraint satisfaction problems, genetic algorithms}
 \end{abstract}
 
 
 \section{Introduction}
-Artificial intelligence (AI) is the emulation of human intelligence of computers that are designed to think and behave like humans. As AI has evolved to have a huge global influence, it operates by integrating vast volumes of data with quick, iterative analysis and intelligent algorithms, which enables the program to learn automatically from patterns or features in the data.
+Artificial intelligence (AI), in our scope, is the application of computing to solve non-trivial problems and analyse complex, real-world, situations.
+AI has been extensively researched and applied to many situations at this point in time. However, the basis of testing many AI approaches remains in the application of AI to well defined games, such as chess, and logic puzzles such as Sudoku or, in our case, Picross.
 
-Picross, also known as Nonograms, is a wonderful series of games in which players use logic to solve puzzles that the cells in a grid must be marked or just left clear constrained by the numbers at the side of the grid(as Figure 1 shows). The least time to solve the puzzles is the key to win. However, playing games like a human is other than thinking about games like a human or learning like one. There is a famous saying that game-playing is the Drosophila of AI. And yet in our research it could be that the task of playing picross, once it’s converted into the task of searching some certain nodes evaluated by time consumed, it is also a different kind of intelligence.
+Picross, also known as Nonograms, is a logic puzzle in which the player uses provided rules to mark (or omit from marking) cells in a grid.
+The rules are given as a ordered list of numbers, each referring to a contiguous sequence of filled cells in the grid.
+The puzzles come in two formats, monochrome and multicoloured.
+Cell sequences must be separated, either by a space in same-colour sequences, or a break by a sequence of a differing colour.
+Typically, the rules are given as lists of numbers at the sides of the grid (see Figure 1). As these puzzles (typically) have only one solution, the best method to solve them is determined by the speed of the solution.
+We decided on looking at picross puzzles due to their relative novelty, and we were also attracted by the goal of solving a puzzle being to produce an image - a quality that Sudoku cannot compete with.
 
 \begin{figure}[h]
   \centering
   \includegraphics[width=0.6\textwidth]{picross1.png}
-  \caption{An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled with true. We mark black cells are true and cells left blank are false.}
+  \caption{An example of a picross puzzle, with the start state on the left and completed puzzle on the right. The numbered hints describe how many contiguous blocks of cells are filled. Black cells mark filled cells and blank cells mark unfilled cells. Example from \texttt{https://en.wikipedia.org/wiki/Nonogram}, sourced 2021-04-28.}
 \end{figure}
 
-Our motivation is no more than analyzing the problem of picross and deduce what the best strategy among the 4 mentioned AI algorithms, which can be used to picross design feedback, content generation, or difficulty estimation. One potential use is in order for humans to use these computer-generated strategies, the strategies must be both efficient in the domain of interest and concisely articulated so that a designer can consider the whole strategy in their head. For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
+Our goal is to analyse the solving of picross puzzles, and determine which is the best among the 4 approaches we are examining. These types of results can be used for picross design feedback, content generation, or difficulty estimation.
+One potential use is to act as an automated difficulty grading system to be used by picross puzzle designers. Depending on the approach and the time taken to solve the puzzle by a given algorithm, a puzzle curation system can sort puzzles in terms of their difficulty.
+For example, there are dozens of documented strategies for picross\cite{picross1}, and puzzle designers construct puzzles and rank their difficulty based on which of these strategies are used\cite{picross2}.
 
-This paper presents a comparison of 4 different AI algorithms including uniform cost search, Q-learning, CSP and GA that have been used to solve the picross puzzles. The paper also evaluates these algorithms based on their execution time, memoty usage and so on. And through the process of implementation and evaluation we prove the state-of-the-art of all these algorithms and we also find out their common aspects and differences, connections between methods, drawbacks and open problems. Our recording of presentation link of this research is xxx.
+This paper presents a comparison of 4 different AI algorithms - uniform cost search, Q-learning, CSP and GA - that we  have decided to apply to solving picross puzzles.
+The paper also evaluates these algorithms based on their execution time, memory usage and other metrics.
+Through the process of implementation and evaluation we show the pros and cons of each algorithm, and we also examine their common aspects and differences, connections between methods, drawbacks and open problems.
+Our recording of presentation link of this research is xxx. \todo[inline]{get recording link - maybe put in a different location in the report?}
 
 
 \section{Related Work}
-Picross, like other logic puzzles such as Sudoku, has special answers which can be solved by deducing pieces of the answer in any order. In Sudoku, the squares are filled with one number each while in Picross each square is either filled in or left blank. Prior work has also examined the solutions of logic puzzles, but most existing solvers are programs written from scratch for the express purpose of solving paint-by-number puzzles\cite{5.1.1,5.1.2,5.1.3,5.1.7}. Browne provides a deductive search algorithm that is intended to mimic the constraints and method of human solvers\cite{Browne}. The complexity of picross can be estimated by calculating the number of steps that can be solved one row/column at a time according to Batenburg and Kosters\cite{Batenburg and Kosters}.
+Picross, like other logic puzzles such as Sudoku, has a solution that can be reached by the applications of rules of the puzzle, with no strict ordering.
+In Sudoku, the squares are filled with one number each while in Picross each cell is either filled in with a colour or left blank.
+Prior work has examined the solutions of these puzzles, but most existing solvers are programs written from scratch for the explicit purpose of solving picross puzzles\cite{5.1.1,5.1.2,5.1.3,5.1.7}.
+Browne provides a deductive search algorithm that is intended to mimic the constraints and method of human solvers\cite{Browne}.
+The complexity of picross can be estimated by calculating the number of steps that can be solved one row/column at a time according to Batenburg and Kosters\cite{Batenburg and Kosters}.
 
-Heuristic search is a technique that uses a heuristic value for optimizing the search. Many heuristic solving steps are given in order to determine the value of some pixels in a single row or column\cite{Salcedo}, and in order to decide which pixels can be assigned a certain value that they use run ranges\cite{CHYU}. The methodology behind is to assign an integer range to each row or column description, the lowest and largest pixel number can be used to contain the run’s black pixels corresponding to the definition of the integer. An example of applying heuristic steps to fill the pixels is Teal’s Nonogram Solver\cite{Teal}, the input for this solver is given by a single string containing the row and column definitions one by one. In other words, this solver runs through all rows and columns one by one, while applying heuristic steps in order to fill pixels. However, the solver leaves several pixels undetermined, which can clearly be filled by logic decisions. These are pixels that need input from the last pixels in a run, usually at the end of a row or column. Based on this, we will choose GA to solve the picross puzzles because as GA is a class of heuristic optimization methods, it mimics the process of natural evolution by modifying a population of individual solutions which makes it easier to achieve our goal. A-star is another heuristic algorithm that is commonly used in pathfinding and graph traversal, which is the method of mapping an easily traversable path between multiple nodes\cite{astar}.
+Heuristic search is a technique that uses a heuristic value for optimizing the search.
+Heuristic solving involves steps applied in order to determine the value of cells in a single row or column\cite{Salcedo}, in order to decide upon which cells can be assigned based on that value\cite{CHYU}.
+An example of applying heuristic steps to fill the cells is Teal’s Nonogram Solver\cite{Teal}.
+The input for this solver is a string containing the row and column definitions.
+The solver runs through all rows and columns one by one, while applying heuristic steps in order to fill cells.
+However, the solver leaves several cells undetermined, which can afterwards be filled by applying logical derivations from the puzzle's state.
+These are cells that need input from the previous cells in a run, usually at the end of a row or column.
+A-star is an example of a heuristic algorithm that is commonly used in pathfinding and graph traversal, which is the method of finding a traversable path in a graph\cite{astar}.
 
-The Backtracking Heuristic (BH) methodology consists in to construct blocks of items by combination between heuristic, that solve mathematical programming models, and backtrack search algorithm to figure out the best heuristics and their best ordering\cite{BH}.
+The Backtracking Heuristic (BH) methodology is a combination of a heuristic approach, which applies a mathematical programming model, and a backtrack search algorithm in order to determine the best heuristics and an optimal ordering between them\cite{BH}.
 
-Backtracking Search for CSP: Some hobbyists have created programs that solve Sudoku puzzles using a backtracking algorithm, which is a form of brute force search\cite{brute}. Backtracking is a depth-first search (as comparison to a breadth-first search) so it can completely investigate one branch to a potential solution before going on to another. A brute force algorithm visits the empty cells in some order, filling in digits sequentially, or backtracking when the number is found to be not valid\cite{Peter,lecture}.
+Backtracking Search for Constraint Satisfaction Problems (CSP): Backtracking is a variant of depth-first search.
+The difference lies in an extra step backtracking applies.
+Each time the algorithm traverses a node (state in our case), the state of the puzzle is checked.
+If a constraint is broken, then the algorithm will backtrack to the puzzle's previous state and explore the next branch, rather than continuing down the branch that will not yield a solution.
 
-Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints could be presented as an image, and hence Mehta chose the algorithm used for Sudoku to be Deep Q-Learning. The Q agent is trained with no rules of the game, with only the reward corresponding to each state's action. This paper\cite{Qlearning} contributes to choosing the reward structure, state representation, and formulation of the deep neural network.
+Reinforcement Learning for CSP: According to Mehta et al.\cite{Qlearning}, the constraints of a logic puzzle, such as Sudoku, could be modelled as an image, and then have deep Q-Learning applied to it in order to solve the logic puzzle.
+The agent is trained with no rules of the game, with only the reward corresponding to each state's action.
+Mehta et al. contribute to how to determine the reward structure, state representation, and formulation of the deep neural network when applied to the types of logic puzzles we are examining in our own work.
 
-Genetic algorithms have found much use in puzzle-based problem solving. According to \cite{geneticAlgo}, genetic algorithms are well suited for multi-objective optimisation problems, such as sudoku puzzles. Search algorithms are a commonly deployed in games to find an optimal solution to a problem with many path options. A problem encountered by search algorithms is the high time and space complexities required when the search domain becomes exceedingly large. Genetic algorithms are a way of mitigating this downside of search algorithms with respect to solution searching, and have been demonstrated as effective in solving other constraint based puzzles such as sudoku.
-
-A genetic algorithm is a stochastic optimization algorithm. It takes inspiration from biological ideas such as the theory of evolution put forth by Charles Darwin. In this theory, genetic characteristics are passed down through successive generations following successful reproduction. Successful production of offspring is dependent on many factors, including the suitability of the parents to the local environment. When applied to optimisation algorithms, parents may be thought of as an instance of an agent attempting to reach a goal. A generation is a population of these instances with slight differences between their characteristic parameters. Following each iteration of the agents attempting to reach a goal state, the agents with the best progress are given a higher probability of producing offspring. The next generation is produced as a function of this probability. Thus, each cohort of agents is a slight modification of the previous population, weighted towards the most successful members of the previous generation. Over many iterations, the population should become optimized to the environment, thus having more success in reaching the goal state. 
-
-
+Genetic algorithms have found much use in puzzle-based problem solving.
+According to Mantere and Kolijonen\cite{geneticAlgo}, genetic algorithms are well suited for multi-objective optimisation problems, such as sudoku puzzles.
+Search algorithms are commonly deployed in games in order to find an optimal solution to a problem with many path options.
+A problem encountered by search algorithms is the high time and space complexities required when the search domain becomes exceedingly large.
+Genetic algorithms are a way of mitigating this downside of search algorithms with respect to solution searching, and have been demonstrated as effective in solving other constraint based puzzles such as sudoku.
 
 \section{Problem Definition and Algorithm}
-This section formalises the problem you are addressing and the models used to solve it. This section should provide a technical discussion of the chosen/implemented algorithms. A pseudocode description of the algorithm(s) can also be beneficial to a clear explanation. It is also possible to provide one example that clarifies the way an algorithm works. It is important to highlight in this section the possible parameters involved in the model and their impact, as well as all the implementation choices that can impact the algorithm.
+We looked at four algorithms in total - search (specifically, Uniform Cost Search), Q-Learning, Constraint Satisfaction and Genetic Algorithms.
+We decided on search as an example of an unsuitable approach, Q-Learning \todo[inline]{ask andrej}, constraint satisfaction because of the natural mapping between the puzzle to the approach, and Genetic Algorithms, due to the dissimilarity of the approach from the other ones we were attempting.
 
 \subsection{Uniform Cost Search}
 We have implemented an uniform cost search solution to solve picross puzzles - while this is an established search algorithm, this requires our problem to be represented as a searchable graph.
 
-We did this by modelling the puzzle as a graph - The start state is an empty puzzle, and the next states are potential moves of filling in a square as a particular colour, out of all unfilled squares (our only factor of filtering is if a row/column combination allows for a colour). The cost function we have implemented is looking at the row/column of the square in question, and calculating:
+We did this by modelling the puzzle as a graph - The start state is an empty puzzle, and the next states are potential moves of filling in a square as a particular colour, out of all unfilled squares (our only factor of filtering is if a row/column combination allows for a colour).
+The cost function we have implemented is looking at the row/column of the square in question, and calculating:
 
 $$ (1 - row_{proportion}) * (1 - column_{propotion}) $$
 
-where $row/column_{proportion}$ is the number of squares of that colour in that row/column divided by the height/width of the puzzle. As such, in the intersection of a full row/column pair, the action cost is zero, of a nearly full pair close to zero and for a sparse pair approaching one. This gives us a cost function which makes cheaper locations that will be more likely to contain a square of that colour.
+where $row/column_{proportion}$ is the number of squares of that colour in that row/column divided by the height/width of the puzzle.
+As such, in the intersection of a full row/column pair, the action cost is zero, of a nearly full pair close to zero and for a sparse pair approaching one.
+This gives us a cost function which makes cheaper locations that will be more likely to contain a square of that colour.
 
-While the original plan was to add onto this a heuristic in order to implement a-star search, we could not come up with a sensible way to derive a heuristic from the state of the puzzle - either we would produce a calculation that would most likely not correspond to a useful way to estimate the "completeness" of a puzzle, or we would effectively be encoding another method like constraint programming within the heuristic itself (making the surrounding search implementation redundant).
+While the original plan was to add onto this a heuristic in order to implement a-star search, we could not come up with a sensible way to derive a heuristic from the state of the puzzle.
+We would either produce a calculation that would most likely not correspond to a useful way to estimate the "completeness" of a puzzle, or we would effectively be encoding another method like constraint programming within the heuristic itself (making the surrounding search implementation redundant).
 
-Due to the nature of the puzzle, using search is expected to be the worst performing method, and is mainly created as an example. Since the puzzle can have an inordinate number of states, and there is a massive expansion of state transitions at each state, using a search approach immediately hits major speed and memory limits.
+Due to the nature of the puzzle, using search is expected to be the worst performing method, and is mainly created as an example.
+Since the puzzle can have an inordinate number of states, and there is a massive expansion of state transitions at each state, using a search approach immediately hits major speed and memory limits.
 
-For example, taking a monochrome 5x5 puzzle, we have $2^{25}$ total possible states, and most states have a numerous amount of state transitions - 25 from the initial state, 24 from \textit{each} state following those, and so on. As such, the frontier of the search grows at a very rapid pace - this both makes each state take additional computing time, and quickly fills up the physical limits of available memory on most computers.
+For example, taking a monochrome 5x5 puzzle, we have $2^{25}$ total possible states, and most states have a numerous amount of state transitions - 25 from the initial state, 24 from \textit{each} state following those, and so on.
+As such, the frontier of the search grows at a very rapid pace - this both makes each state take additional computing time, and quickly fills up the physical limits of available memory on most computers.
 
-Some reduction occurs from the fact that the cost and result of two paths leading to the same state are regardless of order, allowing us to collapse in duplicate entries. However, this does not nearly reduce the load of the approach to a state where is it comparable to other methods that actively check against the puzzle's rules and full current state in a sensible manner.
+Some reduction occurs from the fact that the cost and result of two paths leading to the same state are regardless of order, allowing us to collapse in duplicate entries.
+However, this does not nearly reduce the load of the approach to a state where is it comparable to other methods that actively check against the puzzle's rules and full current state in a sensible manner.
 
 \subsection{Q-Learning}
-First the state space and the actions space had to be defined for the problem in order to create a Q-learning agent. 
+First the state space and the actions space had to be defined for the problem in order to create a Q-learning agent.
 
 The state of a given puzzle was defined as the the rows that were filled in by the Q-leaning agent. If there were different permutation chosen for a given row of a given puzzle, the state of the puzzle would be different.
 
@@ -122,7 +166,7 @@ The number of episodes will determine how many times the problem will be solved 
 Updating the q-table is done the Bellman equation. This process is done by combined the old q-value with a learning rate, the reward, the discount rate and the max q-value in the future state. The equation is given below. Alpha is the learning rate and it determines how much influence the new q-value will have on the old one. The higher the learning rate, the more influence the future q-value will have.
 
 \begin{equation}
-	NewQ(s, a) = (1 - \alpha)Q(s,a) + \alpha[R(s,a) + \gamma maxQ'(s', a') - Q(s,a)] 
+	NewQ(s, a) = (1 - \alpha)Q(s,a) + \alpha[R(s,a) + \gamma maxQ'(s', a') - Q(s,a)]
 \end{equation}
 
 \subsection{Constraint Programming}
@@ -166,7 +210,7 @@ The overall algorithm is shown below.
 \end{algorithm}
 
 \subsection{Genetic Algorithms}
-The approach taken in this project follows the typical genetic algorithm design implementation. The programme reads the rules file which determines the constraints for each nonogram puzzle. 
+The approach taken in this project follows the typical genetic algorithm design implementation. The programme reads the rules file which determines the constraints for each nonogram puzzle.
 \begin{enumerate}
 \item Selection:
 the parents for the next generation are selected based on a metric known as fitness. In this implementation, fitness is a measure of how many of the constraints are left unsatisfied by a parent solution. The agents are sorted by those with the lowest number of unsatisfied constraints and these are more likely to be parents.
@@ -195,7 +239,7 @@ The overall algorithm is shown below.
 		\EndIf
 		\EndWhile
 		\State \Return $fittestMemeberOfPopulation(population)$
-		
+
 	\end{algorithmic}
 \end{algorithm}
 
@@ -258,10 +302,6 @@ Norvig, Peter. "Solving Every Sudoku Puzzle". Peter Norvig (personal website). R
 Zelenski, Julie (July 16, 2008). Lecture 11 | Programming Abstractions (Stanford). Stanford Computer Science Department.
 \url{https://www.youtube.com/watch?v=p-gpaIGRCQI}
 
-\bibitem{brute}
-Brute Force Search, December 14th, 2009.
-\url{http://intelligence.worldofcomputing/brute-force-search}
-
 \bibitem{picross1}
 Andrew C Stuart. 2007. The Logic of Sudoku. Michael Mepham Publishing.
 
@@ -278,8 +318,8 @@ Solving 8-Puzzle using A* Algorithm
 \url{https://blog.goodaudience.com/solving-8-puzzle-using-a-algorithm-7b509c331288}
 
 \bibitem{geneticAlgo}
-Using genetic algorithms to solve sudoku puzzles
-\url{https://ieeexplore.ieee.org/document/4424632}
+T. Mantere and J. Koljonen, "Solving, rating and generating Sudoku puzzles with GA," 2007 IEEE Congress on Evolutionary Computation, 2007, pp. 1382-1389, doi: 10.1109/CEC.2007.4424632.
+\url{https://doi.org/10.1109/CEC.2007.4424632}
 
 \bibitem{BH}
 Jonatã L., Araújo P., Pinheiro P.R. (2011) Applying Backtracking Heuristics for Constrained Two-Dimensional Guillotine Cutting Problems. In: Liu B., Chai C. (eds) Information Computing and Applications. ICICA 2011. Lecture Notes in Computer Science, vol 7030. Springer, Berlin, Heidelberg.
