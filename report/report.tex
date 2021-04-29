@@ -1,15 +1,24 @@
 % !BIB TS-program =
 \documentclass{svproc}
 \usepackage{url}
+\usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+\usepackage{todonotes}
 \def\UrlFont{\rmfamily}
 \tolerance=1
 \emergencystretch=\maxdimen
 \hyphenpenalty=10000
 \hbadness=10000
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  filecolor=magenta,
+  urlcolor=cyan,
+  citecolor=black,
+}
 
 \begin{document}
 \mainmatter
@@ -25,7 +34,7 @@
 
 \begin{abstract}
 Research in Artificial Intelligence has always had a very strong relationship with games and game-playing. Picross (a.k.a nonograms) are logic puzzles with simple rules and challenging solutions, and in this case our research provides a survey that analyses and compares different AI algorithms - uniform cost search, Q-learning, constraint satisfaction problems (CSPs) and genetic algorithms (GA) applied to solve picross puzzles. Through the process of implementation and evaluation we analyse there algorithms and find out their common aspects, differences, connections between methods, drawbacks and open problems.
-\keywords{artificial intelligence, uniform cost search, Q-learning, CSPs, Genetic Algorithms}
+\keywords{artificial intelligence, uniform cost search, Q-learning, constraint satisfaction problems, genetic algorithms}
 \end{abstract}
 
 
@@ -53,17 +62,30 @@ For example, there are dozens of documented strategies for picross\cite{picross1
 This paper presents a comparison of 4 different AI algorithms - uniform cost search, Q-learning, CSP and GA - that we  have decided to apply to solving picross puzzles.
 The paper also evaluates these algorithms based on their execution time, memory usage and other metrics.
 Through the process of implementation and evaluation we show the pros and cons of each algorithm, and we also examine their common aspects and differences, connections between methods, drawbacks and open problems.
-Our recording of presentation link of this research is xxx.
+Our recording of presentation link of this research is xxx. \todo[inline]{get recording link - maybe put in a different location in the report?}
 
 
 \section{Related Work}
-Picross, like other logic puzzles such as Sudoku, has special answers which can be solved by deducing pieces of the answer in any order. In Sudoku, the squares are filled with one number each while in Picross each square is either filled in or left blank. Prior work has also examined the solutions of logic puzzles, but most existing solvers are programs written from scratch for the express purpose of solving paint-by-number puzzles\cite{5.1.1,5.1.2,5.1.3,5.1.7}. Browne provides a deductive search algorithm that is intended to mimic the constraints and method of human solvers\cite{Browne}. The complexity of picross can be estimated by calculating the number of steps that can be solved one row/column at a time according to Batenburg and Kosters\cite{Batenburg and Kosters}.
+Picross, like other logic puzzles such as Sudoku, has a solution that can be reached by the applications of rules of the puzzle, with no strict ordering.
+In Sudoku, the squares are filled with one number each while in Picross each cell is either filled in with a colour or left blank.
+Prior work has examined the solutions of these puzzles, but most existing solvers are programs written from scratch for the explicit purpose of solving picross puzzles\cite{5.1.1,5.1.2,5.1.3,5.1.7}.
+Browne provides a deductive search algorithm that is intended to mimic the constraints and method of human solvers\cite{Browne}.
+The complexity of picross can be estimated by calculating the number of steps that can be solved one row/column at a time according to Batenburg and Kosters\cite{Batenburg and Kosters}.
 
-Heuristic search is a technique that uses a heuristic value for optimizing the search. Many heuristic solving steps are given in order to determine the value of some pixels in a single row or column\cite{Salcedo}, and in order to decide which pixels can be assigned a certain value that they use run ranges\cite{CHYU}. The methodology behind is to assign an integer range to each row or column description, the lowest and largest pixel number can be used to contain the run’s black pixels corresponding to the definition of the integer. An example of applying heuristic steps to fill the pixels is Teal’s Nonogram Solver\cite{Teal}, the input for this solver is given by a single string containing the row and column definitions one by one. In other words, this solver runs through all rows and columns one by one, while applying heuristic steps in order to fill pixels. However, the solver leaves several pixels undetermined, which can clearly be filled by logic decisions. These are pixels that need input from the last pixels in a run, usually at the end of a row or column. Based on this, we will choose GA to solve the picross puzzles because as GA is a class of heuristic optimization methods, it mimics the process of natural evolution by modifying a population of individual solutions which makes it easier to achieve our goal. A-star is another heuristic algorithm that is commonly used in pathfinding and graph traversal, which is the method of mapping an easily traversable path between multiple nodes\cite{astar}.
+Heuristic search is a technique that uses a heuristic value for optimizing the search.
+Heuristic solving involves steps applied in order to determine the value of cells in a single row or column\cite{Salcedo}, in order to decide upon which cells can be assigned based on that value\cite{CHYU}.
+An example of applying heuristic steps to fill the cells is Teal’s Nonogram Solver\cite{Teal}.
+The input for this solver is a string containing the row and column definitions.
+The solver runs through all rows and columns one by one, while applying heuristic steps in order to fill cells.
+However, the solver leaves several cells undetermined, which can afterwards be filled by applying logical derivations from the puzzle's state.
+These are cells that need input from the previous cells in a run, usually at the end of a row or column.
+A-star is an example of a heuristic algorithm that is commonly used in pathfinding and graph traversal, which is the method of finding a traversable path in a graph\cite{astar}.
 
-The Backtracking Heuristic (BH) methodology consists in to construct blocks of items by combination between heuristic, that solve mathematical programming models, and backtrack search algorithm to figure out the best heuristics and their best ordering\cite{BH}.
+The Backtracking Heuristic (BH) methodology is a combination of a heuristic approach, which applies a mathematical programming model, and a backtrack search algorithm in order to determine the best heuristics and an optimal ordering between them\cite{BH}.
 
-Backtracking Search for CSP: Some hobbyists have created programs that solve Sudoku puzzles using a backtracking algorithm, which is a form of brute force search\cite{brute}. Backtracking is a depth-first search (as comparison to a breadth-first search) so it can completely investigate one branch to a potential solution before going on to another. A brute force algorithm visits the empty cells in some order, filling in digits sequentially, or backtracking when the number is found to be not valid\cite{Peter,lecture}.
+Backtracking Search for CSP: Some hobbyists have created programs that solve Sudoku puzzles using a backtracking algorithm.
+Backtracking is a variant depth-first search, which investigates one branch to a potential solution before going on to another.
+A brute force algorithm visits the empty cells in some order, filling in digits sequentially, or backtracking when the number is found to be not valid\cite{Peter,lecture}.
 
 Reinforcement Learning for CSP: According to \cite{Qlearning}, the constraints could be presented as an image, and hence Mehta chose the algorithm used for Sudoku to be Deep Q-Learning. The Q agent is trained with no rules of the game, with only the reward corresponding to each state's action. This paper\cite{Qlearning} contributes to choosing the reward structure, state representation, and formulation of the deep neural network.
 
@@ -275,10 +297,6 @@ Norvig, Peter. "Solving Every Sudoku Puzzle". Peter Norvig (personal website). R
 \bibitem{lecture}
 Zelenski, Julie (July 16, 2008). Lecture 11 | Programming Abstractions (Stanford). Stanford Computer Science Department.
 \url{https://www.youtube.com/watch?v=p-gpaIGRCQI}
-
-\bibitem{brute}
-Brute Force Search, December 14th, 2009.
-\url{http://intelligence.worldofcomputing/brute-force-search}
 
 \bibitem{picross1}
 Andrew C Stuart. 2007. The Logic of Sudoku. Michael Mepham Publishing.
