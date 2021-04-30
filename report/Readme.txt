@@ -11,6 +11,8 @@ Edvinas Teiserskis
 - Editing and sections in the final report
 
 Min Wu
+- wrote abstract,introduction, related work
+- format our paper in Latex
 
 Edmond Cheng
 
