@@ -318,7 +318,7 @@ The reason for this is due to the nature of the problem structure. Picross probl
 This conclusion is exemplified in the results illustrated in figure \ref{fig:SolveTimes}.
 Backtracking is powerful for these problems because while it considers the entire state space, it quickly discards options when they fail to conform to the constraints.
 
-In contrast, it is not practical to judge how far away a state is from a solution. As a result, creating a heuristic for the problem is incredibly difficult. A uniform cost approach does not introduce problem reduction like the constraint search approach and as a result, the performance is lacking. There was massive memory consumption and time for almost no solved problems. 
+In contrast, it is not practical to determine the solution without applying the constraints - meaning a pure action-cost model does not notably improve the solving process. Neither is to judge how far away a particular state is from a solution - therefore creating a heuristic for the problem is incredibly difficult. As such, an informed search approach like our uniform cost search does not introduce problem reduction like the constraint search approach, and as a result the performance is lacking. There was massive memory consumption and time for almost no solved problems.
 
 This reasoning also applies to both Q-learning and genetic algorithm. They fail to scale in performance when the size of the nonogram increases. And eventually, they will fail to solve the puzzle within a limited time frame. Hence if we wanted to scale the nonograms to larger sizes the only realistic algorithm would be backtracking.
 
