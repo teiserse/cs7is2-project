@@ -6,6 +6,9 @@ Contributions
 
 Edvinas Teiserskis
 - Wrote the pycross.py file
+- Wrote search.py (uniform cost search)
+- Wrote test.py
+- Editing and sections in the final report
 
 Min Wu
 
