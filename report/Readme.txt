@@ -24,9 +24,8 @@ Adam McQuade
 - Relevant contributions to report, video, and slide deck.
 
 Andrej Liadov
-- Wrote the generateAllLines() function in pycross.py.
-- Added helper functions to the pycross.py.
-- Wrote all of the QLearningAgent.py file.
-- Intergrated the QLearningAgent with the tester script.
+- Wrote the generateAllLines() function in pycross.py. 
+- Added helper functions to pycross.py. 
+- Wrote all of QLearningAgent.py file. 
+- Intergrated QLearningAgent with the tester script. 
 - Edited sections of the final report.
-
