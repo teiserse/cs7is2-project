@@ -134,20 +134,20 @@ The state of a given puzzle was defined as the the rows that were filled in by t
 
 The action space for a given puzzle would be defined by getting the permutations of the row that are left to be filled in. Choosing a row to fill would be considered an action that would consequently move the agent to a different state. If an action is chosen for a row it is not possible to reverse that action. The row would be filled if an action was taken and as a result, there would not be any actions available for that row.
 
-The state space contains two methods of exiting the puzzle. The first method is to fill in all rows the to not have any more actions to take. If there are no more actions to take, the algorithm checks whether the solution to the puzzle is correct. If the answer to the puzzle is correct, the reward returned is 1000. If the completed puzzle is incorrect, the reward returned is -100.
+The state space contains two exit states. The first method is to fill in all the rows and to not have any more actions to take. If there are no more actions to take, the algorithm checks whether the solution to the puzzle is correct. If the answer to the puzzle is correct, the reward returned is 1000. If the completed puzzle is incorrect, the reward returned is -100.
 
-Q-learning with a q-table is meant to choose actions in such a way that the reward is maximised. The state space contains very few solutions. In most of the puzzles tested there was a unique correct solution, in some cases there might have been several solutions. That means that the correct solution space is extremely sparse while the incorrect solution space is quite vast. The contrast between correct solution space and incorrect solution space was reflected in the calculation of reward. Taking an action that did not complete the puzzle should always result in a reward of +1. If the an action taken results in a correct solution, a reward returned was +1000 and if the solution was incorrect, a reward of -100 was returned.
+Q-learning with a q-table is meant to choose actions in such a way that the reward is maximised. The state space contains very few solutions. In most of the puzzles tested there was a unique correct solution, in some cases there might have been several solutions. Usually the correct solution space is sparse while the incorrect solution space is quite vast. The contrast between correct solution space and incorrect solution space was reflected in the calculation of reward. Taking an action that did not complete the puzzle should always result in a reward of +1. If the an action taken results in a correct solution, a reward returned was +1000 and if the solution was incorrect, a reward of -100 was returned.
 
-The approach to exploration was a soft-max approach. The exploration rate would be high very high to begin with because nothing is known about the reward, action and state space. A high encourage the agent to choose random actions. A random number is generated between [0-1] and if epsilon is larger than the the random number, the agent picks a random action. If not, it picks the action with the highest q-value. Epsilon has a pre-defined decay rate. By the time the episode number reaches 100, the agent should be a hard-max solver, meaning the agent only picks the best q-value.
+The approach to exploration was a soft-max approach. The exploration rate would be high very high to begin with because nothing is known about the reward, action and state space. A high exploration rate encourages the agent to choose random actions. A random number is generated between 0 and 1 and if epsilon is larger than the random number, the agent picks a random action. If not, it picks the action with the highest q-value. Epsilon has a pre-defined decay rate. By the time the episode number reaches 100, the agent will be a hard-max solver, meaning the agent only picks the best q-value at a given state.
 
-The number of episodes will determine how many times the problem will be solved and as a result the q-table will be updated in a proportional amount since the q-table will be updated after every action. The pseudo-code for an episode is given below.
+The number of episodes will determine how many times the problem will be completed and the q-table will be updated a proportional amount since the q-table is updated after every action. The pseudo-code for an episode is given below.
 
 \begin{algorithm}
 	\caption{Q-Learning Algorithm}\label{euclid}
 	\begin{algorithmic}[1]
 		\For {$\textit{episode} \text{ in } \textit{num\_episodes}$}
 		\State $\textit{agent.puzzle} = \textit{read\_puzzle()}$
-		\For {$\textit{step} \text{in} \textit{max\_steps}$}
+		\For {$\textit{step} \text{ in } \textit{max\_steps}$}
 		\If {$agent.is\_explore()$}
 		\State $\textit{action = agent.get\_random\_action()}$
 		\Else
@@ -164,7 +164,7 @@ The number of episodes will determine how many times the problem will be solved 
 	\end{algorithmic}
 \end{algorithm}
 
-Updating the q-table is done the Bellman equation. This process is done by combined the old q-value with a learning rate, the reward, the discount rate and the max q-value in the future state. The equation is given below. Alpha is the learning rate and it determines how much influence the new q-value will have on the old one. The higher the learning rate, the more influence the future q-value will have.
+Updating the q-table is done the Bellman equation. This process is combines the old q-value with a learning rate, the reward, the discount rate and the max q-value in the future state. The equation is given below. Alpha is the learning rate and it determines how much influence the new q-value will have on the old one. The higher the learning rate, the more influence the future q-value will have on the new q-value.
 
 \begin{equation}
 	NewQ(s, a) = (1 - \alpha)Q(s,a) + \alpha[R(s,a) + \gamma maxQ'(s', a') - Q(s,a)]
@@ -317,11 +317,12 @@ The reason for this is due to the nature of the problem structure. Picross probl
 This conclusion is exemplified in the results illustrated in figure \ref{fig:SolveTimes}.
 Backtracking is powerful for these problems because while it considers the entire state space, it quickly discards options when they fail to conform to the constraints.
 
-In contrast, it is not practical to judge how far away a state is from a solution. As a result, creating a heuristic for the problem is incredibly difficult. A uniform cost approach does not introduce problem reduction like the constraint search approach and as a result, the performance is lacking. There was massive memory consumption and time for almost no solved problems. 
+In contrast, it is not practical to determine the solution without applying the constraints - meaning a pure action-cost model does not notably improve the solving process. Neither is to judge how far away a particular state is from a solution - therefore creating a heuristic for the problem is incredibly difficult. As such, an informed search approach like our uniform cost search does not introduce problem reduction like the constraint search approach, and as a result the performance is lacking. There was massive memory consumption and time for almost no solved problems.
 
 This reasoning also applies to both Q-learning and genetic algorithm. They fail to scale in performance when the size of the nonogram increases. And eventually, they will fail to solve the puzzle within a limited time frame. Hence if we wanted to scale the nonograms to larger sizes the only realistic algorithm would be backtracking.
 
 Perhaps it could be possible to combine backtracking to q-learning and genetic algorithms. This in turn could reduce the action space for both the genetic and q-learning approaches. As a result, the algorithms might converge on larger problems.
+
 
 \begin{thebibliography}{6}
 
