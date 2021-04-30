@@ -182,7 +182,7 @@ def finalIter(RandomAgents, puzzleContraints):
 
 
 def checkSolution(game, contraints):
-    
+    #generic nonogram solution checker sourced from https://stackoverflow.com/questions/813366/solving-nonograms-picross
     board    = game.board
     rows   = game.rows
     columns = game.columns
