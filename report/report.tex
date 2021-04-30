@@ -101,7 +101,7 @@ Genetic algorithms are a way of mitigating this downside of search algorithms wi
 
 \section{Problem Definition and Algorithm}
 We looked at four algorithms in total - search (specifically, Uniform Cost Search), Q-Learning, Constraint Satisfaction and Genetic Algorithms.
-We decided on search as an example of an unsuitable approach, Q-Learning \todo[inline]{ask andrej}, constraint satisfaction because of the natural mapping between the puzzle to the approach, and Genetic Algorithms, due to the dissimilarity of the approach from the other ones we were attempting.
+We decided on search as an example of an unsuitable approach, q-learning because it provides an informed, albeit somewhat random, backtracking mechanic, constraint satisfaction because of the natural mapping between the puzzle to the approach, and Genetic Algorithms, due to the dissimilarity of the approach from the other ones we were attempting.
 
 \subsection{Uniform Cost Search}
 We have implemented an uniform cost search solution to solve picross puzzles - while this is an established search algorithm, this requires our problem to be represented as a searchable graph.
@@ -293,8 +293,8 @@ The specifics are shown in the table below.
 \end{figure}
 \clearpage
 
-The two criteria the algorithms were judged on were solve time and solve rate. The algorithm that best fit these criteria is the CSP algorithm, without compare.
-Not only did it solve every single nonogram, it also achieved to lowest average times.
+The two criteria the algorithms were judged on were solve time and solve rate. The algorithm that best fit these criteria is the CSP algorithm.
+Not only did it solve every single nonogram, it also achieved the lowest average times.
 This is contrasted to arguably the worst performing algorithm, which is the uniform cost search.
 Search only accomplished a solve rate of roughly 12\% and was the slowest solving algorithm under all categories.
 The placements for the genetic algorithm, and the q-learning algorithm are debatable.
@@ -313,13 +313,15 @@ Hence it consumes a lot of memory and time, for very little output.
 
 \section{Conclusions}
 In conclusion the most suitable algorithm for picross problems are constraint search problems.
-The reason for this is due to the nature of the problem structure. Picross problems requires a solver to mechanically consider many different options available and choosing them in a smart way and paying close attention to the constraints will allow the problem and search space to be reduced.
+The reason for this is due to the nature of the problem structure. Picross problems requires a solver to mechanically consider many different options and to choose them in a way that will reduce the problem.
 This conclusion is exemplified in the results illustrated in figure \ref{fig:SolveTimes}.
 Backtracking is powerful for these problems because while it considers the entire state space, it quickly discards options when they fail to conform to the constraints.
 
-In most cases, it is not practical to judge how far away from a solution a particular state is. As a result, creating a heuristic for the problem is incredibly difficult. A uniform cost approach does not consider problem reduction like the constraint search approach and as a result, the performance is lacking. As a result, it leads to an extremely large state space without providing acceptable results.
+In contrast, it is not practical to judge how far away a state is from a solution. As a result, creating a heuristic for the problem is incredibly difficult. A uniform cost approach does not introduce problem reduction like the constraint search approach and as a result, the performance is lacking. There was massive memory consumption and time for almost no solved problems. 
 
 This reasoning also applies to both Q-learning and genetic algorithm. They fail to scale in performance when the size of the nonogram increases. And eventually, they will fail to solve the puzzle within a limited time frame. Hence if we wanted to scale the nonograms to larger sizes the only realistic algorithm would be backtracking.
+
+Perhaps it could be possible to combine backtracking to q-learning and genetic algorithms. This in turn could reduce the action space for both the genetic and q-learning approaches. As a result, the algorithms might converge on larger problems.
 
 \begin{thebibliography}{6}
 
