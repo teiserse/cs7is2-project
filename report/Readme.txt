@@ -17,5 +17,7 @@ Min Wu
 Edmond Cheng
 
 Adam McQuade
+- Wrote GeneticAlgorith.py
+- Relevant contributions to report, video, and slide deck.
 
 Andrej Liadov
