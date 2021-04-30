@@ -12,7 +12,7 @@ def getContraints(puzzle):
     contraints = []
     contraints = puzzle.rows
     contraints = contraints.append(puzzle.columns)
-    return puzzle
+    return contraints
 
 def main():
     
@@ -23,25 +23,28 @@ def main():
     #populationSize = 200
     
 
-    puzzleName = 'apple'
+    puzzleName = '1'
     populationSize = 200
 
     contraints = readContraintsFile('examples/' + puzzleName + '.txt')
     puzzleContraints = createPuzzleContraints(contraints, populationSize)
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
-    puzzleContraints = contraints, nLines, nColumns, nLines*nColumns, populationSize
+
+    #print("Puzzel constraints: ", puzzleContraints)
+
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
+    puzzleContraints = contraints, rows, columns, rows*columns, populationSize
     
     
     pre = time.perf_counter()
     solution = geneticAlgo(puzzleContraints)
-    print(checkSolution(Game(nLines, nColumns, solution.points), contraints))
+    print(checkSolution(Game(rows, columns, solution.points), contraints))
 
     post = time.perf_counter()
     print("Time: ", post - pre)
    
 
 def geneticAlgo(puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
     iterations = 0
     RandomAgents = randomInit(puzzleContraints)
     
@@ -58,7 +61,7 @@ def geneticAlgo(puzzleContraints):
     return finalIter(RandomAgents, puzzleContraints)
 
 def randomInit(puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     S = []
 
@@ -74,7 +77,7 @@ def randomInit(puzzleContraints):
     return S
 
 def crossover(P, puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     PP    = []
 
@@ -100,7 +103,7 @@ def crossover(P, puzzleContraints):
     return PP
 
 def mutation(P, puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     PP = []
 
@@ -120,7 +123,7 @@ def mutation(P, puzzleContraints):
     return PP
 
 def select(randomAgents, crossoverParents, puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     randomAgents = sorted(randomAgents, key = lambda s : (s.fitness, random.random()), reverse = True)
     PP = sorted(crossoverParents, key = lambda s : (s.fitness, random.random()), reverse = True)
@@ -137,7 +140,7 @@ def select(randomAgents, crossoverParents, puzzleContraints):
     return nextGeneration
 
 def converge(P, puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     for s in P:
         if s.fitness == 0:
@@ -150,7 +153,7 @@ def converge(P, puzzleContraints):
     return True
 
 def finalIter(P, puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     for s in P:
         if s.fitness == 0:
@@ -158,25 +161,25 @@ def finalIter(P, puzzleContraints):
     return P[0]
 
 class Game:
-    def __init__(self, nLines, nColumns, points):
-        self.nLines   = nLines
-        self.nColumns = nColumns
+    def __init__(self, rows, columns, points):
+        self.rows   = rows
+        self.columns = columns
         self.board = []
 
-        for _ in range(self.nLines):
+        for _ in range(self.rows):
             aux = []
-            for _ in range(self.nColumns):
+            for _ in range(self.columns):
                 aux += [False]
             self.board += [aux]
 
-        self.fill(points, nLines, nColumns)
+        self.fill(points, rows, columns)
 
-    def fill(self, points, nLines, nColumns):
+    def fill(self, points, rows, columns):
         for i, v in enumerate(points):
-            self.board[int(i/nColumns)][i%nColumns] = v
+            self.board[int(i/columns)][i%columns] = v
 
     def __str__(self):
-        result = '=' * ((self.nColumns)*2+2) + '\n'
+        result = '=' * ((self.columns)*2+2) + '\n'
 
         for l in self.board:
             result += '|'
@@ -184,18 +187,18 @@ class Game:
                 result += (chr(9608) if not s else ' ')*2
             result += '|\n'
 
-        result += '=' * ((self.nColumns)*2+2)
+        result += '=' * ((self.columns)*2+2)
         return result
 
 class Contraints:
     # example: lines = [[1,2,3], [], [2], [9]]
-    def __init__(self, lines, columns):
-        self.lines   = lines
+    def __init__(self, rows, columns):
+        self.rows   = rows
         self.columns = columns
 
     def __str__(self):
-        result = 'lines:\n'
-        for l in self.lines:
+        result = 'rows:\n'
+        for l in self.rows:
             for n in l:
                 result += str(n)
                 result += ' '
@@ -211,25 +214,25 @@ class Contraints:
 
 def checkSolution(game, contraints):
     board    = game.board
-    nLines   = game.nLines
-    nColumns = game.nColumns
+    rows   = game.rows
+    columns = game.columns
 
-    for lineIndex in range(nLines):
-        contraintsQtt = len(contraints.lines[lineIndex])
+    for row in range(rows):
+        contraintsQtt = len(contraints.rows[row])
 
-        columnIndex = 0
+        column = 0
         ruleIndex   = 0
-        while columnIndex < nColumns and ruleIndex < contraintsQtt:
+        while column < columns and ruleIndex < contraintsQtt:
             countSegment = 0
 
-            while(columnIndex < nColumns and not board[lineIndex][columnIndex]):
-                columnIndex += 1
+            while(column < columns and not board[row][column]):
+                column += 1
 
-            while(columnIndex < nColumns and board[lineIndex][columnIndex]):
+            while(column < columns and board[row][column]):
                 countSegment += 1
-                columnIndex  += 1
+                column  += 1
 
-            currRule = contraints.lines[lineIndex][ruleIndex]
+            currRule = contraints.rows[row][ruleIndex]
             if(countSegment != currRule):
                 return False
 
@@ -238,29 +241,29 @@ def checkSolution(game, contraints):
         if ruleIndex < contraintsQtt:
             return False
 
-        while(columnIndex < nColumns):
-            if(board[lineIndex][columnIndex]):
+        while(column < columns):
+            if(board[row][column]):
                 return False
-            columnIndex += 1
+            column += 1
 
-    for columnIndex in range(nColumns):
-        contraintsQtt = len(contraints.columns[columnIndex])
+    for column in range(columns):
+        contraintsQtt = len(contraints.columns[column])
 
-        lineIndex = 0
+        row = 0
         ruleIndex   = 0
 
         # Check if all contraints are being fulfilled
-        while lineIndex < nLines and ruleIndex < contraintsQtt:
+        while row < rows and ruleIndex < contraintsQtt:
             countSegment = 0
 
-            while(lineIndex < nLines and not board[lineIndex][columnIndex]):
-                lineIndex += 1
+            while(row < rows and not board[row][column]):
+                row += 1
 
-            while(lineIndex < nLines and board[lineIndex][columnIndex]):
+            while(row < rows and board[row][column]):
                 countSegment += 1
-                lineIndex  += 1
+                row  += 1
 
-            currRule = contraints.columns[columnIndex][ruleIndex]
+            currRule = contraints.columns[column][ruleIndex]
             if(countSegment != currRule):
                 return False
 
@@ -271,88 +274,88 @@ def checkSolution(game, contraints):
             return False
 
         # Check if there isn't any additional square after last rule
-        while(lineIndex < nLines):
-            if(board[lineIndex][columnIndex]):
+        while(row < rows):
+            if(board[row][column]):
                 return False
-            lineIndex += 1
+            row += 1
 
     return True
 
-def readContraintsFile(fileName):
-    with open(fileName) as contraintsFile:
+def readContraintsFile(puzzleFile):
+    
+    with open(puzzleFile) as puzzleFile:
         readingLines = True
-        lines   = []
+        rows   = []
         columns = []
 
-        for fileLine in contraintsFile:
-            if(fileLine == '-\n'):
+        for rule in puzzleFile:
+            if(rule == '-\n'):
                 readingLines = False
                 continue
 
-            contraintsInFileLine = [[int(rule) for rule in fileLine.split()]]
+            constraints = [[int(x) for x in rule.split()]]
             if(readingLines):
-                lines   += contraintsInFileLine
+                rows   += constraints
             else:
-                columns += contraintsInFileLine
+                columns += constraints
 
-    return Contraints(lines=lines, columns=columns)
+    return Contraints(rows=rows, columns=columns)
 
 def createPuzzleContraints(contraints, populationSize):
      
-    #lines = puzzle.rows
-    nLines   = len(contraints.lines)
-    nColumns = len(contraints.columns)
+    rows   = len(contraints.rows)
+    columns = len(contraints.columns)
     nPoints  = 0
 
     # Count total number of points
-    for line in contraints.lines:
-        for rule in line:
+    for row in contraints.rows:
+        for rule in row:
             nPoints += rule
 
-    return (contraints, nLines, nColumns, nPoints, populationSize)
+    return (contraints, rows, columns, nPoints, populationSize)
 
 def fitness(sol, puzzleContraints):
-    contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    contraints, rows, columns, nPoints, populationSize = puzzleContraints
     count = 0
-    game  = Game(nLines, nColumns, sol)
+    game  = Game(rows, columns, sol)
     board = sol
 
-    for lineIndex in range(nLines):
-        contraintsQtt = len(contraints.lines[lineIndex])
+    for row in range(rows):
+        contraintsQtt = len(contraints.rows[row])
 
-        columnIndex = 0
+        column = 0
         ruleIndex   = 0
 
-        while columnIndex < nColumns or ruleIndex < contraintsQtt:
+        while column < columns or ruleIndex < contraintsQtt:
             countSegment = 0
-            currRule     = contraints.lines[lineIndex][ruleIndex] if ruleIndex < contraintsQtt else 0
+            currRule     = contraints.rows[row][ruleIndex] if ruleIndex < contraintsQtt else 0
 
-            while columnIndex < nColumns and not board[lineIndex*nColumns + columnIndex]:
-                columnIndex += 1
+            while column < columns and not board[row*columns + column]:
+                column += 1
 
-            while columnIndex < nColumns and board[lineIndex*nColumns + columnIndex]:
+            while column < columns and board[row*columns + column]:
                 countSegment += 1
-                columnIndex += 1
+                column += 1
 
             count -= abs(countSegment - currRule)
             ruleIndex += 1
 
-    for columnIndex in range(nColumns):
-        contraintsQtt = len(contraints.columns[columnIndex])
+    for column in range(columns):
+        contraintsQtt = len(contraints.columns[column])
 
-        lineIndex = 0
+        row = 0
         ruleIndex = 0
 
-        while lineIndex < nLines or ruleIndex < contraintsQtt:
+        while row < rows or ruleIndex < contraintsQtt:
             countSegment = 0
-            currRule     = contraints.columns[columnIndex][ruleIndex] if ruleIndex < contraintsQtt else 0
+            currRule     = contraints.columns[column][ruleIndex] if ruleIndex < contraintsQtt else 0
 
-            while lineIndex < nLines and not board[lineIndex*nColumns + columnIndex]:
-                lineIndex += 1
+            while row < rows and not board[row*columns + column]:
+                row += 1
 
-            while lineIndex < nLines and board[lineIndex*nColumns + columnIndex]:
+            while row < rows and board[row*columns + column]:
                 countSegment += 1
-                lineIndex    += 1
+                row    += 1
 
             count     -= abs(countSegment - currRule)
             ruleIndex += 1
@@ -365,21 +368,21 @@ def solve_from_picross(puzzle : pycross.Picross):
 
     # contraints = readContraintsFile('examples/' + puzzleName + '.txt')
     # puzzleContraints = createPuzzleContraints(contraints, populationSize)
-    # contraints, nLines, nColumns, nPoints, populationSize = puzzleContraints
+    # contraints, rows, columns, nPoints, populationSize = puzzleContraints
 
     row_rules = [[rule[1] for rule in row] for row in puzzle.rows]
     column_rules = [[rule[1] for rule in column] for column in puzzle.columns]
-    contraints = Contraints(lines=row_rules, columns=column_rules)
-    nLines = puzzle.height
-    nColumns = puzzle.width
+    contraints = Contraints(rows=row_rules, columns=column_rules)
+    rows = puzzle.height
+    columns = puzzle.width
     populationSize = 200
 
-    puzzleContraints = contraints, nLines, nColumns, nLines * nColumns, populationSize
+    puzzleContraints = contraints, rows, columns, rows * columns, populationSize
 
     pre = time.perf_counter()
     solution = geneticAlgo(puzzleContraints)
-    # print(checkSolution(Game(nLines, nColumns, solution.points), contraints))
-    # print(Game(nLines, nColumns, solution.points))
+    # print(checkSolution(Game(rows, columns, solution.points), contraints))
+    # print(Game(rows, columns, solution.points))
     # print(solution.points)
     post = time.perf_counter()
     # print("Time: ", post - pre)
@@ -401,10 +404,7 @@ def solve_from_picross(puzzle : pycross.Picross):
 
     return puzzle
 
-
 if __name__ == '__main__':
     
     main()
-
-
 
