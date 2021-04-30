@@ -15,6 +15,9 @@ Min Wu
 - format our paper in Latex
 
 Edmond Cheng
+- Wrote the backtrack.py file
+- Wrote the related sections in the report
+- Transcribed the nonogram json files
 
 Adam McQuade
 - Wrote GeneticAlgorith.py
