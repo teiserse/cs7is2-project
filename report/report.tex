@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{algorithm}
+\usepackage{tabularx}
 \usepackage[noend]{algpseudocode}
 \usepackage{todonotes}
 \def\UrlFont{\rmfamily}
@@ -244,20 +245,82 @@ The overall algorithm is shown below.
 \end{algorithm}
 
 \section{Experimental Results}
-	This section should provide the details of the evaluation. Specifically:
-\begin{itemize}
-	\item Methodology: describe the evaluation criteria, the data used during the evaluation, and the methodology followed to perform the evaluation.
-	\item Results: present the results of the experimental evaluation. Graphical data and tables are two common ways to present the results. Also, a comparison with a baseline should be provided.
-	\item Discussion: discuss the implication of the results of the proposed algorithms/models. What are the weakness/strengths of the method(s) compared with the other methods/baseline?
-\end{itemize}
+	All algorithms were tested using 6 variations of nonograms:
+	\begin{itemize}
+	    \item 5x5 Monochrome
+	    \item WxH Monochrome - where W,H < 10
+	    \item 10x10 Monochrome
+	    \item 5x5 Multicoloured
+	    \item WxH Multicoloured - where W,H < 10
+	    \item 10x10 Multicoloured
+	\end{itemize}
+\noindent All algorithms were allowed a total of 3 minutes to solve the nonogram.
+The average solve times under each category are shown in figures \ref{fig:SolveTimes} and \ref{fig:SolveTimesShort}.
 
+One important property to note is that the context of these solve  times matter.
+Not all algorithms managed to solve every single nonogram.
+Only the backtracking algorithm (hereby referred to as CSP) managed to solve all nonograms.
+The specifics are shown in the table below.
+\begin{table}[h]
+    \centering
+    \begin{tabularx}{\textwidth}{|m{0.208\textwidth}||m{0.12\textwidth}|m{0.12\textwidth}|m{0.12\textwidth}|m{0.12\textwidth}|m{0.12\textwidth}|m{0.12\textwidth}|}
+        \hline
+         CSP & 0 & 0 & 0 & 0 & 0 & 0 \\
+         \hline
+         Search & 5 & 9 & 10 & 9 & 10 & 10 \\
+         \hline
+         Q-Learning & 2 & 5 & 10 & 2 & 7 & 10 \\
+         \hline
+         GA & 2 & 2 & 5 & 10 & 10 & 10 \\
+         \hline
+    \end{tabularx}
+    \caption{Number of Unsolved Nonograms}
+    \label{tab:UnsolvedTable}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{SolveTimes.png}
+    \caption{Average Solve Times of All Algorithms}
+    \label{fig:SolveTimes}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{SolveTimesShort.png}
+    \caption{Average Solve Times Excluding Search}
+    \label{fig:SolveTimesShort}
+\end{figure}
+\clearpage
+
+The two criteria the algorithms were judged on were solve time and solve rate. The algorithm that best fit these criteria is the CSP algorithm, without compare.
+Not only did it solve every single nonogram, it also achieved to lowest average times.
+This is contrasted to arguably the worst performing algorithm, which is the uniform cost search.
+Search only accomplished a solve rate of roughly 12\% and was the slowest solving algorithm under all categories.
+The placements for the genetic algorithm, and the q-learning algorithm are debatable.
+They both shared similar solve rates, at 35\% and 30\% respectively.
+Their average solve times were comparable, judging from figure \ref{fig:SolveTimes}, but genetic algorithms seemed to scale better with the size of the puzzle.
+Q-learning did not scale as well, and fails to solve a single 10x10 nonogram within the 3 minute window.
+Genetic algorithm solved 5 of the 10x10 monochromes, and 0 of the 10x10 multicoloured nonograms.
+An argument can be made for either algorithm being superior. Q-learning is more flexible in that it has the capability (somewhat) to solve multicoloured nonograms, whereas genetic algorithm does not. But the solve times using Q-learning increases much quicker than the genetic algorithm solve times.
+
+As expected, when the size of the puzzle increased, the solve times also rose correspondingly.
+Which leads to results where the algorithms fail to solve the puzzle within the given 3 minute time frame.
+While it may be possible that any of the tested algorithms would reach a solution eventually, this process may take too long and take too much memory.
+This is the case with the search algorithm.
+Search is extremely poor at solving nonograms due to the large state space.
+Hence it consumes a lot of memory and time, for very little output.
 
 \section{Conclusions}
-In conclusion the most suitable algorithm for picross problems are constraint search problems. The reason for this is due to the nature of the problem structure. Picross problems requires a solver to mechanically consider many different options available and choosing them in a smart way and paying close attention to the constraints will allow the problem and search space to be reduced. This conclusion is exemplified in the results by \todo[inline]{refer to results}.
+In conclusion the most suitable algorithm for picross problems are constraint search problems.
+The reason for this is due to the nature of the problem structure. Picross problems requires a solver to mechanically consider many different options available and choosing them in a smart way and paying close attention to the constraints will allow the problem and search space to be reduced.
+This conclusion is exemplified in the results illustrated in figure \ref{fig:SolveTimes}.
+Backtracking is powerful for these problems because while it considers the entire state space, it quickly discards options when they fail to conform to the constraints.
 
-In most cases, it is not practical to judge how far away from a solution a particular state is. As a result, creating a heuristic for the problem is incredibly difficult. A uniform cost approach does not consider problem reduction like the constraint search approach and as a result, the performance is lacking. \todo[inline]{Refer to results}
+In most cases, it is not practical to judge how far away from a solution a particular state is. As a result, creating a heuristic for the problem is incredibly difficult. A uniform cost approach does not consider problem reduction like the constraint search approach and as a result, the performance is lacking. As a result, it leads to an extremely large state space without providing acceptable results.
 
-It is also not practical to try and converge on a solution through setting rewards in 
+This reasoning also applies to both Q-learning and genetic algorithm. They fail to scale in performance when the size of the nonogram increases. And eventually, they will fail to solve the puzzle within a limited time frame. Hence if we wanted to scale the nonograms to larger sizes the only realistic algorithm would be backtracking.
+
 
 \begin{thebibliography}{6}
 
